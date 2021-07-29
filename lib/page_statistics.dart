@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'data/portion.dart';
+import 'item_stat.dart';
 import 'objectbox.g.dart';
 import 'streamed.dart';
 
@@ -101,8 +102,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 320,
-                      width: 320,
+                      height: 280,
+                      width: 280,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: RadarChart(
@@ -187,166 +188,125 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                  child: Text('Energy'),
-                ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Stack(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: min(
-                          320,
-                          320 * d.consumedEnergy / totalEnergy,
-                        ),
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.deepPurpleAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${d.consumedEnergy.toStringAsFixed(1)} Kcal',
-                          ),
+                      const Text(
+                        'Energy',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        width: 320,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 0.5,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(8),
-                          ),
+                      Text(
+                        '${totalEnergy.toStringAsFixed(0)} Kcal',
+                        style: const TextStyle(
+                          fontSize: 11,
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                  child: Text('Carbohydrates'),
+                StatItem(
+                  value: d.consumedEnergy,
+                  target: totalEnergy.toDouble(),
+                  format: (d) => '${d.toStringAsFixed(0)} Kcal',
+                  color: Colors.deepPurpleAccent,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Stack(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: min(
-                          320,
-                          320 * d.consumedCarbs / totalGramsCarbs,
-                        ),
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.pinkAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Center(
-                          child:
-                              Text('${d.consumedCarbs.toStringAsFixed(1)} g'),
+                      const Text(
+                        'Carbohydrates',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        width: 320,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 0.5,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(8),
-                          ),
+                      Text(
+                        '${totalGramsCarbs.toStringAsFixed(1)} g',
+                        style: const TextStyle(
+                          fontSize: 11,
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                  child: Text('Fats'),
+                StatItem(
+                  value: d.consumedCarbs,
+                  target: totalGramsCarbs,
+                  format: (d) => '${d.toStringAsFixed(1)} g',
+                  color: Colors.pinkAccent,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Stack(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: min(
-                          320,
-                          320 * d.consumedFats / totalGramsFat,
-                        ),
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.yellowAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${d.consumedFats.toStringAsFixed(1)} g',
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
+                      const Text(
+                        'Fat',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        width: 320,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 0.5,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(8),
-                          ),
+                      Text(
+                        '${totalGramsFat.toStringAsFixed(1)} g',
+                        style: const TextStyle(
+                          fontSize: 11,
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                  child: Text('Protein'),
+                StatItem(
+                  value: d.consumedFats,
+                  target: totalGramsFat,
+                  format: (d) => '${d.toStringAsFixed(1)} g',
+                  color: Colors.yellowAccent,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Stack(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: min(
-                          320,
-                          320 * d.consumedProtein / totalGramsProtein,
-                        ),
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.orangeAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Center(
-                          child:
-                              Text('${d.consumedProtein.toStringAsFixed(1)} g'),
+                      const Text(
+                        'Protein',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        width: 320,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 0.5,
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(8),
-                          ),
+                      Text(
+                        '${totalGramsProtein.toStringAsFixed(1)} g',
+                        style: const TextStyle(
+                          fontSize: 11,
                         ),
-                      ),
+                      )
                     ],
                   ),
+                ),
+                StatItem(
+                  value: d.consumedProtein,
+                  target: totalGramsProtein,
+                  format: (d) => '${d.toStringAsFixed(1)} g',
+                  color: Colors.orangeAccent,
                 ),
               ],
             );

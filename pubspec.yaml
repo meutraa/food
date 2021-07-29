@@ -13,6 +13,10 @@ dependencies:
   fl_chart: 0.36.3
   flutter:
     sdk: flutter
+  flutter_neumorphic:
+    git:
+      url: https://github.com/alionour/Flutter-Neumorphic
+      ref: 1127907c574c6bce5b1485ac7021fb9c1e6f220c
   objectbox: 1.1.1
   objectbox_flutter_libs: 1.1.1
 
