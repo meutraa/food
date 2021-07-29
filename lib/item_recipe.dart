@@ -86,7 +86,9 @@ class RecipeItem extends StatelessWidget {
                       mass: recipe.mass,
                       name: '${recipe.name} Clone',
                     );
-                    c.portions.addAll(recipe.portions);
+
+                    // Create a copy of all these portions
+                    c.portions.addAll(recipe.portions.map((e) => e..id = 0));
                     Navigator.push<void>(
                       context,
                       MaterialPageRoute(

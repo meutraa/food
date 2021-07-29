@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:objectbox/internal.dart';
 
 import 'objectbox.g.dart';
 
@@ -8,6 +9,8 @@ class DataList<T> extends StatefulWidget {
   final Store store;
   final Widget Function(BuildContext, T) itemBuilder;
   final String Function(T) searchString;
+  final Condition<T>? condition;
+  final QueryIntegerProperty<T> orderField;
   final String hint;
 
   const DataList({
@@ -15,6 +18,8 @@ class DataList<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.searchString,
     required this.hint,
+    required this.orderField,
+    this.condition,
     Key? key,
   }) : super(key: key);
 
@@ -30,12 +35,11 @@ class _DataListState<T> extends State<DataList<T>> {
   @override
   void initState() {
     super.initState();
+    final qbuild = widget.store.box<T>().query(widget.condition)..order(
+      widget.orderField, flags: Order.descending,
+    );
     _controller.addStream(
-      widget.store
-          .box<T>()
-          .query()
-          .watch(triggerImmediately: true)
-          .map((e) => e.find()),
+      qbuild.watch(triggerImmediately: true).map((e) => e.find()),
     );
     _filterController.addListener(filterListener);
   }

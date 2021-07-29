@@ -6,21 +6,21 @@ class Ingredient {
 
   final String name;
 
-  final double mass; // in g
-  final double energy; // in kcal
+  double mass; // in g
+  double energy; // in kcal
 
-  final double fats;
-  final double saturated;
-  final double? mono;
-  final double? poly;
-  final double? trans;
+  double fats;
+  double saturated;
+  double? mono;
+  double? poly;
+  double? trans;
 
-  final double carbohydrates;
-  final double sugar;
-  final double fibre;
+  double carbohydrates;
+  double sugar;
+  double fibre;
 
-  final double protein;
-  final double salt;
+  double protein;
+  double salt;
 
   Ingredient({
     required this.mass,
@@ -38,4 +38,42 @@ class Ingredient {
     required this.salt,
     this.id = 0,
   });
+
+  Ingredient.mash({
+    required this.mass,
+    required this.name,
+    this.id = 0,
+    this.energy = 0,
+    this.fats = 0,
+    this.saturated = 0,
+    this.mono = 0,
+    this.poly = 0,
+    this.trans = 0,
+    this.carbohydrates = 0,
+    this.sugar = 0,
+    this.fibre = 0,
+    this.protein = 0,
+    this.salt = 0,
+  });
+
+  Ingredient mash(double mass) {
+    final ratio = mass / this.mass;
+
+    return Ingredient(
+      id: id,
+      mass: mass,
+      name: name,
+      energy: energy * ratio,
+      fats: fats * ratio,
+      saturated: saturated * ratio,
+      mono: (mono ?? 0) * ratio,
+      poly: (poly ?? 0) * ratio,
+      trans: (trans ?? 0) * ratio,
+      carbohydrates: carbohydrates * ratio,
+      sugar: sugar * ratio,
+      fibre: fibre * ratio,
+      protein: protein * ratio,
+      salt: salt * ratio,
+    );
+  }
 }

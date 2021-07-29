@@ -1,8 +1,6 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'data/intake.dart';
 import 'objectbox.g.dart';
 
 class StatisticsPage extends StatefulWidget {
@@ -18,9 +16,11 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  final _controller = StreamController<List<Intake>>();
-
+  // final _controller = StreamController<List<Intake>>();
   @override
+  Widget build(BuildContext context) => const Text('hi');
+
+  /*@override
   void initState() {
     super.initState();
     final time = DateTime.now();
@@ -78,5 +78,5 @@ class _StatisticsPageState extends State<StatisticsPage> {
             ],
           );
         },
-      );
+      );*/
 }

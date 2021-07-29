@@ -8,7 +8,7 @@ import 'data/ingredient.dart';
 import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 
-String nf(double? val) => val?.toString() ?? '?';
+String nf(double? val) => val?.toStringAsFixed(1) ?? '?';
 
 class IngredientTableMapRow {
   final int index;

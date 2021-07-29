@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'data/ingredient.dart';
-import 'data/intake.dart';
+import 'data/portion.dart';
 import 'data/recipe.dart';
 import 'item_ingredient.dart';
+import 'item_intake.dart';
 import 'item_recipe.dart';
-
 import 'list_data.dart';
+import 'modal_intake.dart';
 import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 import 'page_edit_recipe.dart';
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  void onNewIntake() {}
+  void onNewIntake() => showIntakeDialog(context, store: widget.store);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -96,14 +98,23 @@ class _HomePageState extends State<HomePage> {
           controller: _pageController,
           children: [
             StatisticsPage(store: widget.store),
-            DataList<Intake>(
+            DataList<Portion>(
               store: widget.store,
-              itemBuilder: (context, e) => Text(e.id.toString()),
-              searchString: (e) => e.id.toString(),
+              condition: Portion_.time.notNull(),
+              orderField: Portion_.id,
+              itemBuilder: (context, e) => PortionItem(
+                portion: e,
+                store: widget.store,
+              ),
+              searchString: (e) => e.on(
+                ingredient: (e) => e.name,
+                recipe: (e) => e.name,
+              ),
               hint: 'Hummous',
             ),
             DataList<Ingredient>(
               store: widget.store,
+              orderField: Ingredient_.id,
               itemBuilder: (context, e) => IngredientItem(
                 ingredient: e,
                 store: widget.store,
@@ -113,6 +124,7 @@ class _HomePageState extends State<HomePage> {
             ),
             DataList<Recipe>(
               store: widget.store,
+              orderField: Recipe_.id,
               itemBuilder: (context, e) => RecipeItem(
                 recipe: e,
                 store: widget.store,
