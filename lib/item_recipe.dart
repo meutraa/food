@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'data/portion.dart';
 import 'data/recipe.dart';
 import 'item_ingredient.dart';
 import 'modal_confirm.dart';
@@ -68,7 +69,47 @@ class RecipeItem extends StatelessWidget {
                     context,
                     title: 'Delete ${recipe.name}?',
                     body: 'This action can not be reversed',
-                    onConfirmed: () => store.box<Recipe>().remove(recipe.id),
+                    onConfirmed: () {
+                      // Check if this recipe is used in any active portions
+                      final refs = store
+                          .box<Portion>()
+                          .query(
+                            Portion_.recipe
+                                .equals(recipe.id)
+                                .and(Portion_.time.notNull()),
+                          )
+                          .build()
+                          .count();
+
+                      if (refs == 0) {
+                        store.box<Recipe>().remove(recipe.id);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Unable to delete ${recipe.name}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Used in ${refs.toString()} active portions',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   icon: const Icon(
                     Icons.delete_outlined,
