@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'data/ingredient.dart';
+import 'data/intake.dart';
+import 'data/recipe.dart';
+import 'item_ingredient.dart';
+import 'item_recipe.dart';
 
-import 'list_ingredients.dart';
-import 'list_intakes.dart';
-import 'list_recipes.dart';
+import 'list_data.dart';
 import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 import 'page_edit_recipe.dart';
@@ -59,6 +62,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
           onTap: (page) {
             setState(() => _currentPage = page);
             _pageController.animateToPage(
@@ -92,9 +96,30 @@ class _HomePageState extends State<HomePage> {
           controller: _pageController,
           children: [
             StatisticsPage(store: widget.store),
-            IntakeList(store: widget.store),
-            IngredientList(store: widget.store),
-            RecipeList(store: widget.store),
+            DataList<Intake>(
+              store: widget.store,
+              itemBuilder: (context, e) => Text(e.id.toString()),
+              searchString: (e) => e.id.toString(),
+              hint: 'Hummous',
+            ),
+            DataList<Ingredient>(
+              store: widget.store,
+              itemBuilder: (context, e) => IngredientItem(
+                ingredient: e,
+                store: widget.store,
+              ),
+              searchString: (e) => e.name,
+              hint: 'Kiwi',
+            ),
+            DataList<Recipe>(
+              store: widget.store,
+              itemBuilder: (context, e) => RecipeItem(
+                recipe: e,
+                store: widget.store,
+              ),
+              searchString: (e) => e.name,
+              hint: 'Dahl',
+            ),
           ],
         ),
         floatingActionButton: _currentPage == 0
