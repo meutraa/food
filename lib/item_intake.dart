@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:food/data/intake.dart';
-
 import 'data/intake.dart';
+
 import 'item_ingredient.dart';
 
 class IntakeItem extends StatelessWidget {
@@ -27,7 +26,9 @@ class IntakeItem extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                Row(children: [Text(nf(intake.weight.toDouble()) + ' g')]),
+                Row(children: [
+                  Text('${nf(intake.weight.toDouble())} g'),
+                ]),
                 Text(intake.time.toIso8601String())
               ],
             ),

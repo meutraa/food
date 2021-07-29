@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'data/ingredient.dart';
+import 'modal_confirm.dart';
 import 'objectbox.g.dart';
 
 String? requiredNumber(String? val) {
@@ -19,8 +20,8 @@ class EditIngredientPage extends StatefulWidget {
   final Store store;
 
   const EditIngredientPage({
-    Key? key,
     required this.store,
+    Key? key,
     this.ingredient,
   }) : super(key: key);
 
@@ -49,6 +50,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
   late final TextEditingController protein;
   late final TextEditingController salt;
 
+  @override
   void initState() {
     super.initState();
     name = TextEditingController(text: widget.ingredient?.name);
@@ -73,6 +75,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
     salt = TextEditingController(text: widget.ingredient?.salt.toString());
   }
 
+  @override
   void dispose() {
     name.dispose();
     mass.dispose();
@@ -120,21 +123,23 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
+                  onPressed: () => showConfirmDialog(
+                    context,
+                    title: 'Discard Changes?',
+                    onConfirmed: () => Navigator.pop(context),
+                  ),
+                  icon: const Icon(
                     Icons.cancel_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Cancel',
                     style: TextStyle(
                       color: Colors.white,
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 36,
                   child: VerticalDivider(
                     color: Colors.white,
@@ -143,16 +148,16 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 TextButton.icon(
                   onPressed: () async {
                     final valid = _formKey.currentState?.validate();
-                    if (valid == true) {
+                    if (valid ?? false) {
                       await saveValue();
                       Navigator.of(context).pop();
                     }
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.save_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Save',
                     style: TextStyle(
                       color: Colors.white,
@@ -183,7 +188,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Name',
                       ),
                     ),
@@ -196,8 +201,8 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: mass,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(),
-                        decoration: InputDecoration(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
                           labelText: 'Per',
                           hintText: '100',
                           suffixText: 'g',
@@ -218,10 +223,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: protein,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Protein',
                           hintText: '0',
                           suffixText: 'g',
@@ -236,10 +241,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: energy,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Energy',
                           hintText: '0',
                           suffixText: 'Kcal',
@@ -250,7 +255,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Fats',
                 style: TextStyle(fontSize: 22),
               ),
@@ -265,10 +270,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: fats,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Total',
                           hintText: '0',
                           suffixText: 'g',
@@ -282,10 +287,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                       child: TextFormField(
                         controller: trans,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Trans',
                           hintText: '0',
                           suffixText: 'g',
@@ -298,10 +303,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                       controller: saturated,
                       validator: requiredNumber,
                       textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.numberWithOptions(
+                      keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Saturated',
                         hintText: '0',
                         suffixText: 'g',
@@ -320,10 +325,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                       child: TextFormField(
                         controller: mono,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Mono Unsaturated',
                           hintText: '0',
                           suffixText: 'g',
@@ -337,10 +342,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                       child: TextFormField(
                         controller: poly,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Poly Unsaturated',
                           hintText: '0',
                           suffixText: 'g',
@@ -351,7 +356,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Carbohydrates',
                 style: TextStyle(fontSize: 22),
               ),
@@ -366,10 +371,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: carbohydrates,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Total',
                           hintText: '0',
                           suffixText: 'g',
@@ -384,10 +389,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                         controller: sugar,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(
+                        keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Sugar',
                           hintText: '0',
                           suffixText: 'g',
@@ -400,10 +405,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                       controller: fibre,
                       validator: requiredNumber,
                       textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.numberWithOptions(
+                      keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Fibre',
                         hintText: '0',
                         suffixText: 'g',
@@ -413,7 +418,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Other',
                 style: TextStyle(fontSize: 22),
               ),
@@ -422,10 +427,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 controller: salt,
                 validator: requiredNumber,
                 textInputAction: TextInputAction.done,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Salt',
                   hintText: '0',
                   suffixText: 'g',

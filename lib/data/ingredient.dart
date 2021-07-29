@@ -23,7 +23,6 @@ class Ingredient {
   final double salt;
 
   Ingredient({
-    this.id = 0,
     required this.mass,
     required this.name,
     required this.energy,
@@ -37,5 +36,6 @@ class Ingredient {
     required this.fibre,
     required this.protein,
     required this.salt,
+    this.id = 0,
   });
 }

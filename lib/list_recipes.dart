@@ -10,8 +10,8 @@ class RecipeList extends StatefulWidget {
   final Store store;
 
   const RecipeList({
-    Key? key,
     required this.store,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class _RecipeListState extends State<RecipeList> {
             );
           }
           if (snapshot.data == null) {
-            return Center(
+            return const Center(
               child: Text('Empty list'),
             );
           }

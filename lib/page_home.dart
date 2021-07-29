@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food/data/intake.dart';
 
-import 'data/ingredient.dart';
 import 'list_ingredients.dart';
 import 'list_intakes.dart';
 import 'list_recipes.dart';
@@ -14,8 +12,8 @@ class HomePage extends StatefulWidget {
   final Store store;
 
   const HomePage({
-    Key? key,
     required this.store,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -38,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void onNewRecipe() async => Navigator.push(
+  void onNewRecipe() => Navigator.push<void>(
         context,
         MaterialPageRoute(
           builder: (context) => EditRecipePage(
@@ -47,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  void onNewIngredient() async => Navigator.push(
+  void onNewIngredient() => Navigator.push<void>(
         context,
         MaterialPageRoute(
           builder: (context) => EditIngredientPage(
@@ -56,27 +54,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  void onNewIntake() async {
-    final intake = Intake(time: DateTime.now(), weight: 50);
-    final cashews = Ingredient(
-      name: 'cashews',
-      mass: 100,
-      energy: 624,
-      fats: 50.9,
-      saturated: 10.1,
-      poly: null,
-      trans: null,
-      mono: null,
-      carbohydrates: 18.8,
-      sugar: 5.6,
-      fibre: 4.3,
-      protein: 20.5,
-      salt: 0.1,
-    );
-    intake.consumable.target = cashews;
-    widget.store.box<Ingredient>().put(cashews);
-    widget.store.box<Intake>().put(intake, mode: PutMode.insert);
-  }
+  void onNewIntake() {}
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -85,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             setState(() => _currentPage = page);
             _pageController.animateToPage(
               page,
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.ease,
             );
           },
@@ -132,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                       return onNewRecipe();
                   }
                 },
-                child: Icon(Icons.add),
-              ), // This trailing comma makes auto-formatting nicer for build methods.
+                child: const Icon(Icons.add),
+              ),
       );
 }

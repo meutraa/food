@@ -1,3 +1,4 @@
+// ignore: prefer_relative_imports
 import 'package:food/data/ingredient.dart';
 import 'package:objectbox/objectbox.dart';
 
@@ -10,8 +11,8 @@ class Intake {
   final consumable = ToOne<Ingredient>();
 
   Intake({
-    this.id = 0,
     required this.time,
     required this.weight,
+    this.id = 0,
   });
 }

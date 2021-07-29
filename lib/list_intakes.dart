@@ -9,8 +9,8 @@ class IntakeList extends StatefulWidget {
   final Store store;
 
   const IntakeList({
-    Key? key,
     required this.store,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -48,17 +48,17 @@ class _IntakeListState extends State<IntakeList> {
             );
           }
           if (snapshot.data == null) {
-            return Center(
+            return const Center(
               child: Text('Empty list'),
             );
           }
           final data = snapshot.data!;
           return ListView.separated(
             padding: const EdgeInsets.only(top: 64),
-            itemBuilder: (context, i) {
-              return Text(data[i].consumable.target?.name ?? 'No target');
-            },
-            separatorBuilder: (context, i) => Divider(),
+            itemBuilder: (context, i) => Text(
+              data[i].consumable.target?.name ?? 'No target',
+            ),
+            separatorBuilder: (context, i) => const Divider(),
             itemCount: data.length,
           );
         },

@@ -1,17 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:food/item_ingredient.dart';
 
 import 'data/ingredient.dart';
+import 'item_ingredient.dart';
 import 'objectbox.g.dart';
 
 class IngredientList extends StatefulWidget {
   final Store store;
 
   const IngredientList({
-    Key? key,
     required this.store,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class _IngredientListState extends State<IngredientList> {
             );
           }
           if (snapshot.data == null) {
-            return Center(
+            return const Center(
               child: Text('Empty list'),
             );
           }

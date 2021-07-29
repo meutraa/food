@@ -1,12 +1,37 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:food/data/ingredient.dart';
-import 'package:food/page_edit_ingredient.dart';
 
+import 'data/ingredient.dart';
 import 'objectbox.g.dart';
+import 'page_edit_ingredient.dart';
 
 String nf(double? val) => val?.toString() ?? '?';
+
+class IngredientTableMapRow {
+  final int index;
+  final String name;
+  final double? Function(Ingredient ing) value;
+  final String unit;
+
+  const IngredientTableMapRow(this.index, this.name, this.value, this.unit);
+}
+
+final tableRows = [
+  IngredientTableMapRow(0, 'Energy', (e) => e.energy, 'Kcal'),
+  IngredientTableMapRow(1, 'Carbohydrates', (e) => e.carbohydrates, 'g'),
+  IngredientTableMapRow(2, '  Sugar', (e) => e.sugar, 'g'),
+  IngredientTableMapRow(3, '  Fibre', (e) => e.fibre, 'g'),
+  IngredientTableMapRow(4, 'Fats', (e) => e.fats, 'g'),
+  IngredientTableMapRow(5, '  Trans', (e) => e.trans, 'g'),
+  IngredientTableMapRow(6, '  Saturated', (e) => e.saturated, 'g'),
+  IngredientTableMapRow(7, '  Monounsaturated', (e) => e.mono, 'g'),
+  IngredientTableMapRow(8, '  Polyunsaturated', (e) => e.poly, 'g'),
+  IngredientTableMapRow(9, 'Protein', (e) => e.protein, 'g'),
+  IngredientTableMapRow(10, 'Salt', (e) => e.salt, 'g'),
+];
 
 class IngredientItem extends StatelessWidget {
   final Ingredient ingredient;
@@ -27,12 +52,14 @@ class IngredientItem extends StatelessWidget {
               ingredient.name,
               style: const TextStyle(
                 fontSize: 20,
+                color: Colors.white,
               ),
             ),
             Text(
-              nf(ingredient.mass) + ' g',
+              '${nf(ingredient.mass)} g',
               style: const TextStyle(
                 fontSize: 14,
+                color: Colors.white,
               ),
             ),
           ],
@@ -67,10 +94,28 @@ class IngredientItem extends StatelessWidget {
                         color: Colors.white.withOpacity(0.75),
                         fontSize: 10,
                       ),
-                      ticksTextStyle: TextStyle(color: Colors.transparent),
+                      ticksTextStyle:
+                          const TextStyle(color: Colors.transparent),
                       dataSets: [
                         RadarDataSet(
-                          borderColor: Colors.yellowAccent,
+                          borderColor: () {
+                            final m = max(
+                              max(
+                                ingredient.carbohydrates,
+                                ingredient.protein,
+                              ),
+                              ingredient.fats,
+                            );
+                            if (m == ingredient.carbohydrates) {
+                              return Colors.pinkAccent;
+                            }
+                            if (m == ingredient.fats) {
+                              return Colors.yellowAccent;
+                            }
+                            if (m == ingredient.protein) {
+                              return Colors.orangeAccent;
+                            }
+                          }(),
                           borderWidth: 0.5,
                           entryRadius: 3,
                           fillColor: Colors.white.withOpacity(0.5),
@@ -93,11 +138,16 @@ class IngredientItem extends StatelessWidget {
                         ),
                       ],
                       tickBorderData: BorderSide(
-                          color: Colors.white.withOpacity(0.25), width: 0.5),
+                        color: Colors.white.withOpacity(0.25),
+                        width: 0.5,
+                      ),
                       borderData: FlBorderData(show: false),
-                      gridBorderData:
-                          BorderSide(color: Colors.white.withOpacity(0.5)),
-                      radarBorderData: BorderSide(color: Colors.transparent),
+                      gridBorderData: BorderSide(
+                        color: Colors.white.withOpacity(0.5),
+                      ),
+                      radarBorderData: const BorderSide(
+                        color: Colors.transparent,
+                      ),
                     ),
                   ),
                 ),
@@ -106,54 +156,33 @@ class IngredientItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsetsDirectional.only(
                     start: 8,
+                    end: 16,
                   ),
                   child: Table(
-                    children: [
-                      TableRow(children: [
-                        Text('Energy'),
-                        Text(nf(ingredient.energy) + ' Kcal')
-                      ]),
-                      TableRow(children: [
-                        Text('Carbohydrates'),
-                        Text(nf(ingredient.carbohydrates) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Sugars'),
-                        Text(nf(ingredient.sugar) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Fibre'),
-                        Text(nf(ingredient.fibre) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('Fat'),
-                        Text(ingredient.fats.toString() + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Trans'),
-                        Text(nf(ingredient.trans) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Saturated'),
-                        Text(nf(ingredient.saturated) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Monounsaturated'),
-                        Text(nf(ingredient.mono) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('  Polyunsaturated'),
-                        Text(nf(ingredient.poly) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('Protein'),
-                        Text(nf(ingredient.protein) + ' g')
-                      ]),
-                      TableRow(children: [
-                        Text('Salt'),
-                        Text(nf(ingredient.salt) + ' g')
-                      ]),
-                    ],
+                    columnWidths: const {
+                      0: FlexColumnWidth(8),
+                      1: FlexColumnWidth(3),
+                    },
+                    children: tableRows
+                        .map(
+                          (e) => TableRow(
+                            decoration: e.index.isOdd
+                                ? BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                  )
+                                : null,
+                            children: [
+                              Text(
+                                e.name,
+                              ),
+                              Text(
+                                '${nf(e.value(ingredient))} ${e.unit}',
+                                textAlign: TextAlign.end,
+                              )
+                            ],
+                          ),
+                        )
+                        .toList(growable: false),
                   ),
                 ),
               ),
@@ -169,7 +198,7 @@ class IngredientItem extends StatelessWidget {
                 ),
                 child: TextButton.icon(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.push<void>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditIngredientPage(
@@ -179,11 +208,11 @@ class IngredientItem extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.edit_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Edit',
                     style: TextStyle(
                       color: Colors.white,

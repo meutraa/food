@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:food/page_edit_ingredient.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
+import 'modal_confirm.dart';
 import 'objectbox.g.dart';
+import 'page_edit_ingredient.dart';
 
 class EditRecipePage extends StatefulWidget {
   final Recipe? recipe;
   final Store store;
 
   const EditRecipePage({
-    Key? key,
     required this.store,
     this.recipe,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -37,6 +38,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
 
   List<Ingredient>? ingredients;
 
+  @override
   void initState() {
     super.initState();
 
@@ -46,13 +48,13 @@ class _EditRecipePageState extends State<EditRecipePage> {
     name = TextEditingController(text: widget.recipe?.name);
     mass = TextEditingController(text: widget.recipe?.mass.toString());
 
-    // TODO: load in all the existing portions
     _portions.addAll(widget.recipe?.portions.map(
           (e) => PortionState(e)..mass.text = e.mass.toString(),
         ) ??
         []);
   }
 
+  @override
   void dispose() {
     name.dispose();
     super.dispose();
@@ -93,21 +95,23 @@ class _EditRecipePageState extends State<EditRecipePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
+                  onPressed: () => showConfirmDialog(
+                    context,
+                    title: 'Discard Changes?',
+                    onConfirmed: () => Navigator.pop(context),
+                  ),
+                  icon: const Icon(
                     Icons.cancel_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Cancel',
                     style: TextStyle(
                       color: Colors.white,
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 36,
                   child: VerticalDivider(
                     color: Colors.white,
@@ -116,16 +120,16 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 TextButton.icon(
                   onPressed: () async {
                     final valid = _formKey.currentState?.validate();
-                    if (valid == true) {
+                    if (valid ?? false) {
                       await saveValue();
                       Navigator.of(context).pop();
                     }
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.save_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Save',
                     style: TextStyle(
                       color: Colors.white,
@@ -156,7 +160,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Name',
                       ),
                     ),
@@ -169,8 +173,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
                         controller: mass,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.numberWithOptions(),
-                        decoration: InputDecoration(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
                           labelText: 'Per',
                           hintText: '100',
                           suffixText: 'g',
@@ -181,13 +185,13 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Ingredients',
                 style: TextStyle(fontSize: 22),
               ),
               const SizedBox(height: 16),
               Table(
-                columnWidths: {
+                columnWidths: const {
                   0: FlexColumnWidth(8),
                   1: FlexColumnWidth(5),
                   2: FlexColumnWidth(3),
@@ -240,8 +244,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
                               controller: e.mass,
                               validator: requiredNumber,
                               textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.numberWithOptions(),
-                              decoration: InputDecoration(
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
                                 labelText: 'Mass',
                                 hintText: '50',
                                 suffixText: 'g',
@@ -251,7 +255,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                           IconButton(
                             onPressed: () =>
                                 setState(() => _portions.remove(e)),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.delete,
                               color: Colors.white,
                             ),
@@ -265,12 +269,12 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 onPressed: () => setState(() {
                   _portions.add(PortionState(Portion(mass: 0)));
                 }),
-                icon: Icon(
+                icon: const Icon(
                   Icons.add_outlined,
                   color: Colors.white,
                 ),
-                label: Padding(
-                  padding: const EdgeInsets.symmetric(
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(
                     vertical: 24,
                     horizontal: 8,
                   ),

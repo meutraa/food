@@ -12,7 +12,7 @@ class Portion {
   final recipe = ToOne<Recipe>();
 
   Portion({
-    this.id = 0,
     required this.mass,
+    this.id = 0,
   });
 }

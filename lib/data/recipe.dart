@@ -1,5 +1,6 @@
-import 'package:food/data/portion.dart';
 import 'package:objectbox/objectbox.dart';
+
+import 'portion.dart';
 
 @Entity()
 class Recipe {
@@ -10,8 +11,8 @@ class Recipe {
   final portions = ToMany<Portion>();
 
   Recipe({
-    this.id = 0,
     required this.mass,
     required this.name,
+    this.id = 0,
   });
 }

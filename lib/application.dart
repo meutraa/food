@@ -25,6 +25,7 @@ class _ApplicationState extends State<Application> {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Food',
         theme: ThemeData(
+          splashColor: Colors.white,
           primarySwatch: Colors.lightBlue,
           canvasColor: Colors.lightBlue,
           colorScheme: ColorScheme.light(
@@ -41,20 +42,19 @@ class _ApplicationState extends State<Application> {
           ),
           inputDecorationTheme: InputDecorationTheme(
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2.0),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white, width: 2),
             ),
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey, width: 1.0),
+            border: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.5), width: 1.0),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
             ),
-            suffixStyle: TextStyle(
+            suffixStyle: const TextStyle(
               color: Colors.white,
             ),
-            labelStyle: TextStyle(
+            labelStyle: const TextStyle(
               color: Colors.white,
             ),
           ),
@@ -66,7 +66,7 @@ class _ApplicationState extends State<Application> {
               return Center(child: Text(snapshot.error.toString()));
             }
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             return HomePage(store: snapshot.data!);
           },

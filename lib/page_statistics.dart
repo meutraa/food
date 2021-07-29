@@ -9,8 +9,8 @@ class StatisticsPage extends StatefulWidget {
   final Store store;
 
   const StatisticsPage({
-    Key? key,
     required this.store,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -54,23 +54,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
             );
           }
           if (snapshot.data == null) {
-            return Center(
+            return const Center(
               child: Text('Empty list'),
             );
           }
           final data = snapshot.data!;
           var totalEnergy = 0.0;
-          data.forEach((e) {
+          for (final e in data) {
             totalEnergy += e.weight *
                 ((e.consumable.target?.energy ?? 0) /
                     (e.consumable.target?.mass ?? 1));
-          });
+          }
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text('Energy'), Text(totalEnergy.toString())],
+                children: [
+                  const Text('Energy'),
+                  Text(totalEnergy.toString()),
+                ],
               )
             ],
           );

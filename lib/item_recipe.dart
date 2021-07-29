@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:food/data/recipe.dart';
-import 'package:food/page_edit_recipe.dart';
 
+import 'data/recipe.dart';
 import 'item_ingredient.dart';
+import 'modal_confirm.dart';
 import 'objectbox.g.dart';
+import 'page_edit_recipe.dart';
 
 class RecipeItem extends StatelessWidget {
   final Recipe recipe;
@@ -18,11 +19,24 @@ class RecipeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
-        title: Text(
-          recipe.name,
-          style: const TextStyle(
-            fontSize: 20,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              recipe.name,
+              style: const TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              '${nf(recipe.mass)} g',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         children: [
           Row(
@@ -100,7 +114,7 @@ class RecipeItem extends StatelessWidget {
                                     ? e.ingredient.target?.name
                                     : e.recipe.target?.name) ??
                                 ''),
-                            Text(nf(e.mass) + ' g')
+                            Text('${nf(e.mass)} g')
                           ]),
                         )
                         .toList(growable: false),
@@ -109,17 +123,60 @@ class RecipeItem extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 36,
-                  vertical: 8,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton.icon(
+                  onPressed: () => showConfirmDialog(
+                    context,
+                    title: 'Delete ${recipe.name}?',
+                    body: 'This action can not be reversed',
+                    onConfirmed: () => store.box<Recipe>().remove(recipe.id),
+                  ),
+                  icon: const Icon(
+                    Icons.delete_outlined,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-                child: TextButton.icon(
+                TextButton.icon(
                   onPressed: () {
-                    Navigator.push(
+                    final c = Recipe(
+                      mass: recipe.mass,
+                      name: '${recipe.name} Clone',
+                    );
+                    c.portions.addAll(recipe.portions);
+                    Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditRecipePage(
+                          store: store,
+                          recipe: c,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.copy_outlined,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Clone',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push<void>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditRecipePage(
@@ -129,19 +186,19 @@ class RecipeItem extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.edit_outlined,
                     color: Colors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Edit',
                     style: TextStyle(
                       color: Colors.white,
                     ),
                   ),
                 ),
-              )
-            ],
+              ],
+            ),
           )
         ],
       );
