@@ -22,9 +22,7 @@ class IntakeItem extends StatelessWidget {
               children: [
                 Text(
                   intake.consumable.target?.name ?? 'Unknown',
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 Row(children: [
                   Text('${nf(intake.weight.toDouble())} g'),

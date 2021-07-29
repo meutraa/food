@@ -63,9 +63,7 @@ class _DataListState<T> extends State<DataList<T>> {
             );
           }
           if (snapshot.data == null) {
-            return const Center(
-              child: Text('Empty list'),
-            );
+            return const SizedBox.shrink();
           }
           final data = snapshot.data
                   ?.where(
@@ -74,6 +72,9 @@ class _DataListState<T> extends State<DataList<T>> {
                   )
                   .toList(growable: false) ??
               [];
+          if (data.isEmpty) {
+            return const SizedBox.shrink();
+          }
           return Stack(
             children: [
               ShaderMask(

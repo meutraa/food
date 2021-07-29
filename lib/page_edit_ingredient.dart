@@ -117,6 +117,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
   Widget build(BuildContext context) => Scaffold(
         bottomNavigationBar: BottomAppBar(
           color: Colors.lightBlue,
+          elevation: 0,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(

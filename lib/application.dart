@@ -66,7 +66,9 @@ class _ApplicationState extends State<Application> {
               return Center(child: Text(snapshot.error.toString()));
             }
             if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
+              return const Scaffold(
+                  // backgroundColor: Colors.lightBlue,
+                  );
             }
             return HomePage(store: snapshot.data!);
           },
