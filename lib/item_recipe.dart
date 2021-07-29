@@ -27,6 +27,7 @@ class RecipeItem extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
+                fontWeight: FontWeight.w300,
               ),
             ),
             Text(

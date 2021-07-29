@@ -1,9 +1,9 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:objectbox/internal.dart';
 
 import 'objectbox.g.dart';
+import 'streamed.dart';
 
 class DataList<T> extends StatefulWidget {
   final Store store;
@@ -28,19 +28,12 @@ class DataList<T> extends StatefulWidget {
 }
 
 class _DataListState<T> extends State<DataList<T>> {
-  final _controller = StreamController<List<T>>();
   var _filter = '';
   final _filterController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final qbuild = widget.store.box<T>().query(widget.condition)..order(
-      widget.orderField, flags: Order.descending,
-    );
-    _controller.addStream(
-      qbuild.watch(triggerImmediately: true).map((e) => e.find()),
-    );
     _filterController.addListener(filterListener);
   }
 
@@ -50,7 +43,6 @@ class _DataListState<T> extends State<DataList<T>> {
 
   @override
   void dispose() {
-    _controller.close();
     _filterController
       ..removeListener(filterListener)
       ..dispose();
@@ -58,27 +50,21 @@ class _DataListState<T> extends State<DataList<T>> {
   }
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<List<T>>(
-        stream: _controller.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
-          if (snapshot.data == null) {
-            return const SizedBox.shrink();
-          }
-          final data = snapshot.data
-                  ?.where(
-                    (e) =>
-                        widget.searchString(e).toLowerCase().contains(_filter),
-                  )
-                  .toList(growable: false) ??
-              [];
+  Widget build(BuildContext context) => Streamed<T>(
+        orderField: widget.orderField,
+        store: widget.store,
+        condition: widget.condition,
+        builder: (context, items) {
+          final data = items
+              .where(
+                (e) => widget.searchString(e).toLowerCase().contains(_filter),
+              )
+              .toList(growable: false);
+
           if (data.isEmpty) {
             return const SizedBox.shrink();
           }
+
           return Stack(
             children: [
               ShaderMask(

@@ -1,12 +1,15 @@
 import 'dart:math';
 
+import 'package:date_format/date_format.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'item_ingredient.dart';
+import 'modal_confirm.dart';
 import 'objectbox.g.dart';
 
 class PortionItem extends StatefulWidget {
@@ -53,15 +56,28 @@ class _PortionItemState extends State<PortionItem> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              intake.name,
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
+            Row(
+              children: [
+                Text(
+                  '${intake.mass.toStringAsPrecision(3)} g    ',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  intake.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ],
             ),
             Text(
-              '${nf(intake.mass)} g',
+              formatDate(widget.portion.time!, [h, ':', nn, ' ', am])
+                  .toLowerCase(),
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.white,
@@ -196,6 +212,32 @@ class _PortionItemState extends State<PortionItem> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                ),
+                child: TextButton.icon(
+                  onPressed: () {
+                    showConfirmDialog(
+                      context,
+                      title: 'Delete ${intake.name}?',
+                      onConfirmed: () {
+                        widget.store.box<Portion>().remove(widget.portion.id);
+                      },
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.delete_outline_outlined,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 36,
                   vertical: 8,
                 ),
@@ -222,7 +264,7 @@ class _PortionItemState extends State<PortionItem> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           )
         ],
