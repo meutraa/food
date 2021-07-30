@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/style.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -61,37 +63,68 @@ class _HomePageState extends State<HomePage> {
 
   void onNewIntake() => showIntakeDialog(context, store: widget.store);
 
+  void setPage(int? page) {
+    setState(() => _currentPage = page ?? 0);
+    _pageController.animateToPage(
+      page ?? 0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          elevation: 0,
-          onTap: (page) {
-            setState(() => _currentPage = page);
-            _pageController.animateToPage(
-              page,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.ease,
-            );
-          },
-          currentIndex: _currentPage,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.category_outlined),
-              label: 'Statistics',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history_outlined),
-              label: 'Log',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.breakfast_dining_outlined),
-              label: 'Foods',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dinner_dining_outlined),
-              label: 'Recipes',
-            ),
-          ],
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              NeumorphicRadio<int>(
+                value: 0,
+                style: radioStyle,
+                groupValue: _currentPage,
+                onChanged: setPage,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
+                child: const Icon(Icons.category_outlined),
+              ),
+              NeumorphicRadio<int>(
+                value: 1,
+                style: radioStyle,
+                groupValue: _currentPage,
+                onChanged: setPage,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
+                child: const Icon(Icons.history_rounded),
+              ),
+              NeumorphicRadio<int>(
+                value: 2,
+                style: radioStyle,
+                groupValue: _currentPage,
+                onChanged: setPage,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
+                child: const Icon(Icons.breakfast_dining_rounded),
+              ),
+              NeumorphicRadio<int>(
+                value: 3,
+                style: radioStyle,
+                groupValue: _currentPage,
+                onChanged: setPage,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
+                child: const Icon(Icons.dinner_dining_rounded),
+              ),
+            ],
+          ),
         ),
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
@@ -139,7 +172,9 @@ class _HomePageState extends State<HomePage> {
         ),
         floatingActionButton: _currentPage == 0
             ? null
-            : FloatingActionButton(
+            : NeumorphicButton(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.all(16),
                 onPressed: () {
                   switch (_currentPage) {
                     case 1:

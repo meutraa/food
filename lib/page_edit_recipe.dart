@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food/neumorphic_text_field.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -52,6 +53,10 @@ class _EditRecipePageState extends State<EditRecipePage> {
           (e) => PortionState(e)..mass.text = e.mass.toString(),
         ) ??
         []);
+
+    if (_portions.isEmpty) {
+      _portions.add(PortionState(Portion(mass: 0)));
+    }
   }
 
   @override
@@ -150,35 +155,41 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Flexible(
-                    flex: 5,
-                    child: TextFormField(
-                      controller: name,
-                      textInputAction: TextInputAction.next,
-                      textCapitalization: TextCapitalization.sentences,
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Required';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
+                    flex: 17,
+                    child: NeumorphicTextField(
+                      child: TextFormField(
+                        controller: name,
+                        autofocus: widget.recipe == null,
+                        textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.sentences,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Required';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                          hintText: 'Tofu Curry',
+                        ),
                       ),
                     ),
                   ),
                   Flexible(
-                    flex: 2,
+                    flex: 8,
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(start: 16),
-                      child: TextFormField(
-                        controller: mass,
-                        validator: requiredNumber,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Per',
-                          hintText: '100',
-                          suffixText: 'g',
+                      child: NeumorphicTextField(
+                        child: TextFormField(
+                          controller: mass,
+                          validator: requiredNumber,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Per',
+                            hintText: '100',
+                            suffixText: 'g',
+                          ),
                         ),
                       ),
                     ),
@@ -218,18 +229,24 @@ class _EditRecipePageState extends State<EditRecipePage> {
                               },
                               fieldViewBuilder: (context, textEditingController,
                                       focusNode, onFieldSubmitted) =>
-                                  TextFormField(
-                                textInputAction: TextInputAction.next,
-                                controller: textEditingController
-                                  ..text =
-                                      e.portion.ingredient.target?.name ?? '',
-                                validator: (val) {
-                                  if (val == null || val.isEmpty) {
-                                    return 'Required';
-                                  }
-                                  return null;
-                                },
-                                focusNode: focusNode,
+                                  NeumorphicTextField(
+                                child: TextFormField(
+                                  textInputAction: TextInputAction.next,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Ingredient',
+                                    hintText: 'Lemon',
+                                  ),
+                                  controller: textEditingController
+                                    ..text =
+                                        e.portion.ingredient.target?.name ?? '',
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'Required';
+                                    }
+                                    return null;
+                                  },
+                                  focusNode: focusNode,
+                                ),
                               ),
                               onSelected: (v) {
                                 final idx = _portions.indexOf(e);
@@ -241,21 +258,24 @@ class _EditRecipePageState extends State<EditRecipePage> {
                           Padding(
                             padding:
                                 const EdgeInsetsDirectional.only(start: 16),
-                            child: TextFormField(
-                              controller: e.mass,
-                              validator: requiredNumber,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Mass',
-                                hintText: '50',
-                                suffixText: 'g',
+                            child: NeumorphicTextField(
+                              child: TextFormField(
+                                controller: e.mass,
+                                validator: requiredNumber,
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  labelText: 'Mass',
+                                  hintText: '50',
+                                  suffixText: 'g',
+                                ),
                               ),
                             ),
                           ),
                           IconButton(
-                            onPressed: () =>
-                                setState(() => _portions.remove(e)),
+                            onPressed: () => setState(
+                              () => _portions.remove(e),
+                            ),
                             icon: const Icon(
                               Icons.delete,
                               color: Colors.white,

@@ -1,21 +1,18 @@
 import 'dart:math';
 
-import 'package:date_format/date_format.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/preferences.dart';
 
 import 'data/portion.dart';
+import 'date.dart';
 import 'item_stat.dart';
 import 'objectbox.g.dart';
 import 'streamed.dart';
 
 // ignore_for_file: cascade_invocations
-
-const totalEnergy = 1400;
-const totalGramsFat = totalEnergy * 0.65 / 9;
-const totalGramsProtein = totalEnergy * 0.20 / 4;
-const totalGramsCarbs = totalEnergy * 0.15 / 4;
 
 class Stats {
   double consumedEnergy;
@@ -43,8 +40,34 @@ class StatisticsPage extends StatefulWidget {
   _StatisticsPageState createState() => _StatisticsPageState();
 }
 
+class StatData {
+  final String Function(double) format;
+  final double Function(Stats) value;
+  final double target;
+  final String label;
+  final Color color;
+
+  const StatData({
+    required this.label,
+    required this.value,
+    required this.target,
+    required this.format,
+    required this.color,
+  });
+}
+
 class _StatisticsPageState extends State<StatisticsPage> {
-  late DateTime startTime;
+  late final DateTime startTime;
+
+  late final double totalGramsProtein;
+  late final double totalEnergyProtein;
+
+  late final double totalEnergyFat;
+  late final double totalEnergyCarbs;
+  late final double totalGramsFat;
+  late final double totalGramsCarbs;
+
+  late final List<StatData> stats;
 
   Future<Stats> updateStats(List<Portion> portions) async {
     final stats = Stats();
@@ -64,12 +87,57 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   void initState() {
     super.initState();
-    final time = DateTime.now();
-    startTime = time.subtract(Duration(
-      hours: time.hour + 5,
-      minutes: time.minute,
-      seconds: time.second,
-    ));
+    final now = DateTime.now();
+    startTime = DateTime(
+      now.year,
+      now.month,
+      now.day - (now.hour >= 5 ? 0 : 1),
+      5,
+    );
+
+    final bodyWeight = Preferences.mass.val;
+    final totalEnergy = Preferences.energy.val;
+
+// Protein based on weight
+    totalGramsProtein = (bodyWeight * Preferences.proteinPercMult.val) / 100;
+    totalEnergyProtein = totalGramsProtein * 4;
+
+    final usableEnergy = totalEnergy - totalEnergyProtein;
+    totalEnergyFat = (usableEnergy * Preferences.fatPerc.val) / 100;
+    totalEnergyCarbs = usableEnergy - totalEnergyFat;
+    totalGramsFat = totalEnergyFat / 9;
+    totalGramsCarbs = totalEnergyCarbs / 4;
+
+    stats = [
+      StatData(
+        label: 'Energy',
+        value: (d) => d.consumedEnergy,
+        target: totalEnergy.toDouble(),
+        format: (d) => '${d.toStringAsFixed(0)} Kcal',
+        color: Colors.deepPurpleAccent,
+      ),
+      StatData(
+        label: 'Carbohydrates',
+        value: (d) => d.consumedCarbs,
+        target: totalGramsCarbs,
+        format: (d) => '${d.toStringAsFixed(1)} g',
+        color: Colors.pinkAccent,
+      ),
+      StatData(
+        label: 'Fat',
+        value: (d) => d.consumedFats,
+        target: totalGramsFat,
+        format: (d) => '${d.toStringAsFixed(1)} g',
+        color: Colors.yellowAccent,
+      ),
+      StatData(
+        label: 'Protein',
+        value: (d) => d.consumedProtein,
+        target: totalGramsProtein,
+        format: (d) => '${d.toStringAsFixed(1)} g',
+        color: Colors.orangeAccent,
+      ),
+    ];
   }
 
   @override
@@ -88,22 +156,58 @@ class _StatisticsPageState extends State<StatisticsPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: NeumorphicIcon(
+                        Icons.settings_rounded,
+                        size: 32,
+                        style: NeumorphicStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 Center(
                   child: Text(
-                    formatDate(startTime, [DD, '\n', dd, ' ', MM]),
-                    textAlign: TextAlign.center,
+                    weekdays[startTime.weekday],
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 36,
                       fontWeight: FontWeight.w200,
                     ),
                   ),
                 ),
+                const Center(
+                  child: Text(
+                    'the',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w200,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Center(
+                  child: Text(
+                    '${startTime.day}${daySuffix(startTime.day)} of '
+                    '${months[startTime.month]}',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 280,
-                      width: 280,
+                      height: 240,
+                      width: 320,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: RadarChart(
@@ -114,10 +218,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                   return 'Fats';
                                 case 1:
                                   return 'Carbs';
-                                case 2:
-                                  return 'Protein';
                                 default:
-                                  return 'Energy';
+                                  return 'Protein';
                               }
                             },
                             tickCount: 6,
@@ -134,11 +236,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                 borderWidth: 0.5,
                                 entryRadius: 2,
                                 fillColor: Colors.white.withOpacity(0.5),
-                                dataEntries: const [
-                                  RadarEntry(value: totalGramsFat),
-                                  RadarEntry(value: totalGramsCarbs),
-                                  RadarEntry(value: totalGramsProtein),
-                                  RadarEntry(value: totalEnergy / 6),
+                                dataEntries: [
+                                  RadarEntry(value: totalEnergyFat),
+                                  RadarEntry(value: totalEnergyCarbs),
+                                  RadarEntry(value: totalEnergyProtein),
                                 ],
                               ),
                               RadarDataSet(
@@ -164,10 +265,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                 entryRadius: 3,
                                 fillColor: Colors.white.withOpacity(0.5),
                                 dataEntries: [
-                                  RadarEntry(value: d.consumedFats),
-                                  RadarEntry(value: d.consumedCarbs),
-                                  RadarEntry(value: d.consumedProtein),
-                                  RadarEntry(value: d.consumedEnergy / 6),
+                                  RadarEntry(value: d.consumedFats * 9),
+                                  RadarEntry(value: d.consumedCarbs * 4),
+                                  RadarEntry(value: d.consumedProtein * 4),
                                 ],
                               ),
                             ],
@@ -188,126 +288,41 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Energy',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
+                ...stats
+                    .map(
+                      (s) => [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                s.label,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              Text(
+                                s.format(s.target),
+                                style: const TextStyle(fontSize: 11),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${totalEnergy.toStringAsFixed(0)} Kcal',
-                        style: const TextStyle(
-                          fontSize: 11,
+                        StatItem(
+                          value: s.value(d),
+                          target: s.target,
+                          format: s.format,
+                          color: s.color,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                StatItem(
-                  value: d.consumedEnergy,
-                  target: totalEnergy.toDouble(),
-                  format: (d) => '${d.toStringAsFixed(0)} Kcal',
-                  color: Colors.deepPurpleAccent,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Carbohydrates',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      Text(
-                        '${totalGramsCarbs.toStringAsFixed(1)} g',
-                        style: const TextStyle(
-                          fontSize: 11,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                StatItem(
-                  value: d.consumedCarbs,
-                  target: totalGramsCarbs,
-                  format: (d) => '${d.toStringAsFixed(1)} g',
-                  color: Colors.pinkAccent,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Fat',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      Text(
-                        '${totalGramsFat.toStringAsFixed(1)} g',
-                        style: const TextStyle(
-                          fontSize: 11,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                StatItem(
-                  value: d.consumedFats,
-                  target: totalGramsFat,
-                  format: (d) => '${d.toStringAsFixed(1)} g',
-                  color: Colors.yellowAccent,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Protein',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      Text(
-                        '${totalGramsProtein.toStringAsFixed(1)} g',
-                        style: const TextStyle(
-                          fontSize: 11,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                StatItem(
-                  value: d.consumedProtein,
-                  target: totalGramsProtein,
-                  format: (d) => '${d.toStringAsFixed(1)} g',
-                  color: Colors.orangeAccent,
-                ),
+                      ],
+                    )
+                    .expand((e) => e)
+                    .toList(growable: false)
               ],
             );
           },

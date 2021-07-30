@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/preferences.dart';
 
 import 'objectbox.g.dart';
 import 'page_home.dart';
@@ -13,18 +15,24 @@ class Application extends StatefulWidget {
 }
 
 class _ApplicationState extends State<Application> {
-  late Future<Store> store;
+  late Store store;
+  late Future<void> loading;
 
   @override
   void initState() {
-    store = openStore();
+    loading = Future.wait([
+      Preferences().init(),
+      () async {
+        store = await openStore();
+      }()
+    ]);
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context) => NeumorphicApp(
         title: 'Food',
-        theme: ThemeData(
+        materialTheme: ThemeData(
           splashColor: Colors.white,
           primarySwatch: Colors.lightBlue,
           canvasColor: Colors.lightBlue,
@@ -34,43 +42,64 @@ class _ApplicationState extends State<Application> {
             onSecondary: Colors.lightBlue,
             brightness: Brightness.dark,
           ),
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
           typography: Typography.material2018(),
           textSelectionTheme: TextSelectionThemeData(
             cursorColor: Colors.white,
             selectionHandleColor: Colors.white,
             selectionColor: Colors.white.withOpacity(0.4),
           ),
-          inputDecorationTheme: InputDecorationTheme(
+          inputDecorationTheme: const InputDecorationTheme(
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2),
+            focusedBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            filled: true,
+            errorStyle: TextStyle(fontSize: 1),
+            errorBorder: InputBorder.none,
+            border: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding: EdgeInsets.only(
+              left: 24,
+              bottom: 12,
+              top: 12,
+              right: 24,
             ),
-            border: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
-            ),
-            suffixStyle: const TextStyle(
-              color: Colors.white,
-            ),
-            labelStyle: const TextStyle(
-              color: Colors.white,
-            ),
+            suffixStyle: TextStyle(color: Colors.white),
+            labelStyle: TextStyle(color: Colors.white),
           ),
         ),
-        home: FutureBuilder<Store>(
-          future: store,
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.light,
+        theme: NeumorphicThemeData(
+          defaultTextColor: Colors.white,
+          baseColor: Colors.lightBlue,
+          variantColor: Colors.yellowAccent.shade100,
+          shadowDarkColor: Colors.lightBlue.shade700,
+          shadowLightColor: Colors.lightBlue.shade300,
+          shadowDarkColorEmboss: Colors.lightBlue.shade700,
+          shadowLightColorEmboss: Colors.lightBlue.shade300,
+          buttonStyle: const NeumorphicStyle(
+            depth: 8,
+            boxShape: NeumorphicBoxShape.circle(),
+            border: NeumorphicBorder(
+              color: Color(0x33ffffff),
+              width: 0.5,
+            ),
+          ),
+          accentColor: Colors.yellowAccent.shade100,
+        ),
+        home: FutureBuilder<void>(
+          future: loading,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(child: Text(snapshot.error.toString()));
             }
             if (!snapshot.hasData) {
-              return const Scaffold(
-                  // backgroundColor: Colors.lightBlue,
-                  );
+              return const Scaffold();
             }
-            return HomePage(store: snapshot.data!);
+            return HomePage(store: store);
           },
         ),
       );

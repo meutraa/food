@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/neumorphic_text_field.dart';
 import 'package:objectbox/internal.dart';
 
 import 'objectbox.g.dart';
@@ -61,7 +62,7 @@ class _DataListState<T> extends State<DataList<T>> {
               )
               .toList(growable: false);
 
-          if (data.isEmpty) {
+          if (data.isEmpty && _filter.isEmpty) {
             return const SizedBox.shrink();
           }
 
@@ -103,13 +104,16 @@ class _DataListState<T> extends State<DataList<T>> {
                     left: 16,
                     right: 92,
                   ),
-                  child: TextFormField(
-                    controller: _filterController,
-                    textInputAction: TextInputAction.search,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: 'Search',
-                      hintText: widget.hint,
+                  child: NeumorphicTextField(
+                    child: TextFormField(
+                      controller: _filterController,
+                      textInputAction: TextInputAction.search,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: 'Search',
+                        alignLabelWithHint: true,
+                        hintText: widget.hint,
+                      ),
                     ),
                   ),
                 ),

@@ -53,21 +53,6 @@ final _entities = <ModelEntity>[
             type: 8,
             flags: 0),
         ModelProperty(
-            id: const IdUid(7, 8729865071656684027),
-            name: 'mono',
-            type: 8,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(8, 8243472228486495303),
-            name: 'poly',
-            type: 8,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(9, 7250936914958332269),
-            name: 'trans',
-            type: 8,
-            flags: 0),
-        ModelProperty(
             id: const IdUid(10, 1282655853159619118),
             name: 'carbohydrates',
             type: 8,
@@ -237,7 +222,10 @@ ModelDefinition getObjectBoxModel() {
         435729449234496677,
         5621160335754154102,
         7504966109391101,
-        5413495891883569908
+        5413495891883569908,
+        8729865071656684027,
+        8243472228486495303,
+        7250936914958332269
       ],
       retiredRelationUids: const [7759112108806387875],
       modelVersion: 5,
@@ -262,9 +250,6 @@ ModelDefinition getObjectBoxModel() {
           fbb.addFloat64(3, object.energy);
           fbb.addFloat64(4, object.fats);
           fbb.addFloat64(5, object.saturated);
-          fbb.addFloat64(6, object.mono);
-          fbb.addFloat64(7, object.poly);
-          fbb.addFloat64(8, object.trans);
           fbb.addFloat64(9, object.carbohydrates);
           fbb.addFloat64(10, object.sugar);
           fbb.addFloat64(11, object.fibre);
@@ -288,12 +273,6 @@ ModelDefinition getObjectBoxModel() {
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 12, 0),
               saturated:
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 14, 0),
-              mono: const fb.Float64Reader()
-                  .vTableGetNullable(buffer, rootOffset, 16),
-              poly: const fb.Float64Reader()
-                  .vTableGetNullable(buffer, rootOffset, 18),
-              trans: const fb.Float64Reader()
-                  .vTableGetNullable(buffer, rootOffset, 20),
               carbohydrates:
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 22, 0),
               sugar:
@@ -409,37 +388,25 @@ class Ingredient_ {
   static final saturated =
       QueryDoubleProperty<Ingredient>(_entities[0].properties[5]);
 
-  /// see [Ingredient.mono]
-  static final mono =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[6]);
-
-  /// see [Ingredient.poly]
-  static final poly =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[7]);
-
-  /// see [Ingredient.trans]
-  static final trans =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[8]);
-
   /// see [Ingredient.carbohydrates]
   static final carbohydrates =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[9]);
+      QueryDoubleProperty<Ingredient>(_entities[0].properties[6]);
 
   /// see [Ingredient.sugar]
   static final sugar =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[10]);
+      QueryDoubleProperty<Ingredient>(_entities[0].properties[7]);
 
   /// see [Ingredient.fibre]
   static final fibre =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[11]);
+      QueryDoubleProperty<Ingredient>(_entities[0].properties[8]);
 
   /// see [Ingredient.protein]
   static final protein =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[12]);
+      QueryDoubleProperty<Ingredient>(_entities[0].properties[9]);
 
   /// see [Ingredient.salt]
   static final salt =
-      QueryDoubleProperty<Ingredient>(_entities[0].properties[13]);
+      QueryDoubleProperty<Ingredient>(_entities[0].properties[10]);
 }
 
 /// [Portion] entity fields to define ObjectBox queries.

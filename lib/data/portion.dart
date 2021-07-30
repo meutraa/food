@@ -9,19 +9,16 @@ import 'recipe.dart';
 class Portion {
   int id;
 
+  // If this is null, it is a portion used in a recipe, not intake
+  @Property(type: PropertyType.date)
   DateTime? time;
+
   double mass;
   final ingredient = ToOne<Ingredient>();
   final recipe = ToOne<Recipe>();
 
   Portion({
     required this.mass,
-    this.id = 0,
-    this.time,
-  });
-
-  Portion.empty({
-    this.mass = 0,
     this.id = 0,
     this.time,
   });
@@ -42,9 +39,6 @@ class Portion {
       mash.energy += i.energy * ratio;
       mash.fats += i.fats * ratio;
       mash.saturated += i.saturated * ratio;
-      mash.trans = (mash.trans ?? 0) + (i.trans! * ratio);
-      mash.mono = (mash.mono ?? 0) + (i.mono! * ratio);
-      mash.poly = (mash.poly ?? 0) + (i.poly! * ratio);
       mash.protein += i.protein * ratio;
       mash.salt += i.salt * ratio;
     }
@@ -57,9 +51,6 @@ class Portion {
     mash.energy *= ratio;
     mash.fats *= ratio;
     mash.saturated *= ratio;
-    mash.trans = (mash.trans ?? 0) * ratio;
-    mash.mono = (mash.mono ?? 0) * ratio;
-    mash.poly = (mash.poly ?? 0) * ratio;
     mash.protein *= ratio;
     mash.salt *= ratio;
 

@@ -11,9 +11,6 @@ class Ingredient {
 
   double fats;
   double saturated;
-  double? mono;
-  double? poly;
-  double? trans;
 
   double carbohydrates;
   double sugar;
@@ -28,9 +25,6 @@ class Ingredient {
     required this.energy,
     required this.fats,
     required this.saturated,
-    required this.mono,
-    required this.poly,
-    required this.trans,
     required this.carbohydrates,
     required this.sugar,
     required this.fibre,
@@ -46,9 +40,6 @@ class Ingredient {
     this.energy = 0,
     this.fats = 0,
     this.saturated = 0,
-    this.mono = 0,
-    this.poly = 0,
-    this.trans = 0,
     this.carbohydrates = 0,
     this.sugar = 0,
     this.fibre = 0,
@@ -66,9 +57,6 @@ class Ingredient {
       energy: energy * ratio,
       fats: fats * ratio,
       saturated: saturated * ratio,
-      mono: (mono ?? 0) * ratio,
-      poly: (poly ?? 0) * ratio,
-      trans: (trans ?? 0) * ratio,
       carbohydrates: carbohydrates * ratio,
       sugar: sugar * ratio,
       fibre: fibre * ratio,

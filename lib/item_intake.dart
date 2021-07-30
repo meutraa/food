@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:date_format/date_format.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -11,6 +10,7 @@ import 'data/portion.dart';
 import 'item_ingredient.dart';
 import 'modal_confirm.dart';
 import 'objectbox.g.dart';
+import 'date.dart';
 
 class PortionItem extends StatefulWidget {
   final Portion portion;
@@ -56,28 +56,30 @@ class _PortionItemState extends State<PortionItem> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  '${intake.mass.toStringAsPrecision(3)} g    ',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
+            Flexible(
+              child: Row(
+                children: [
+                  Text(
+                    '${intake.mass.toStringAsPrecision(3)} g    ',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                Text(
-                  intake.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w300,
+                  Text(
+                    intake.name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      overflow: TextOverflow.fade,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Text(
-              formatDate(widget.portion.time!, [h, ':', nn, ' ', am])
-                  .toLowerCase(),
+              timeAgo(widget.portion.time!),
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.white,

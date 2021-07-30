@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food/neumorphic_text_field.dart';
 
 import 'data/ingredient.dart';
 import 'modal_confirm.dart';
@@ -39,9 +40,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
 
   late final TextEditingController fats;
   late final TextEditingController saturated;
-  late final TextEditingController mono;
-  late final TextEditingController poly;
-  late final TextEditingController trans;
 
   late final TextEditingController carbohydrates;
   late final TextEditingController sugar;
@@ -61,9 +59,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
     fats = TextEditingController(text: widget.ingredient?.fats.toString());
     saturated =
         TextEditingController(text: widget.ingredient?.saturated.toString());
-    mono = TextEditingController(text: widget.ingredient?.mono?.toString());
-    poly = TextEditingController(text: widget.ingredient?.poly?.toString());
-    trans = TextEditingController(text: widget.ingredient?.trans?.toString());
 
     carbohydrates = TextEditingController(
         text: widget.ingredient?.carbohydrates.toString());
@@ -82,9 +77,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
     energy.dispose();
     fats.dispose();
     saturated.dispose();
-    mono.dispose();
-    poly.dispose();
-    trans.dispose();
     carbohydrates.dispose();
     sugar.dispose();
     fibre.dispose();
@@ -101,9 +93,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
       energy: double.tryParse(energy.text) ?? 0,
       fats: double.tryParse(fats.text) ?? 0,
       saturated: double.tryParse(saturated.text) ?? 0,
-      mono: double.tryParse(mono.text) ?? 0,
-      poly: double.tryParse(poly.text) ?? 0,
-      trans: double.tryParse(trans.text) ?? 0,
       carbohydrates: double.tryParse(carbohydrates.text) ?? 0,
       sugar: double.tryParse(sugar.text) ?? 0,
       fibre: double.tryParse(fibre.text) ?? 0,
@@ -179,18 +168,22 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 children: [
                   Flexible(
                     flex: 5,
-                    child: TextFormField(
-                      controller: name,
-                      textInputAction: TextInputAction.next,
-                      textCapitalization: TextCapitalization.sentences,
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Required';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
+                    child: NeumorphicTextField(
+                      child: TextFormField(
+                        controller: name,
+                        // Autofocus if this is a new item
+                        autofocus: widget.ingredient == null,
+                        textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.sentences,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Required';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                        ),
                       ),
                     ),
                   ),
@@ -198,15 +191,17 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                     flex: 2,
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(start: 16),
-                      child: TextFormField(
-                        controller: mass,
-                        validator: requiredNumber,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Per',
-                          hintText: '100',
-                          suffixText: 'g',
+                      child: NeumorphicTextField(
+                        child: TextFormField(
+                          controller: mass,
+                          validator: requiredNumber,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Per',
+                            hintText: '100',
+                            suffixText: 'g',
+                          ),
                         ),
                       ),
                     ),
@@ -214,46 +209,20 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: protein,
-                        validator: requiredNumber,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Protein',
-                          hintText: '0',
-                          suffixText: 'g',
-                        ),
-                      ),
-                    ),
+              NeumorphicTextField(
+                child: TextFormField(
+                  controller: energy,
+                  validator: requiredNumber,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
                   ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: energy,
-                        validator: requiredNumber,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Energy',
-                          hintText: '0',
-                          suffixText: 'Kcal',
-                        ),
-                      ),
-                    ),
+                  decoration: const InputDecoration(
+                    labelText: 'Energy',
+                    hintText: '0',
+                    suffixText: 'Kcal',
                   ),
-                ],
+                ),
               ),
               const SizedBox(height: 24),
               const Text(
@@ -267,87 +236,34 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(end: 8),
+                      child: NeumorphicTextField(
+                        child: TextFormField(
+                          controller: fats,
+                          validator: requiredNumber,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: const InputDecoration(
+                            labelText: 'Total',
+                            hintText: '0',
+                            suffixText: 'g',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: NeumorphicTextField(
                       child: TextFormField(
-                        controller: fats,
+                        controller: saturated,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
                         decoration: const InputDecoration(
-                          labelText: 'Total',
-                          hintText: '0',
-                          suffixText: 'g',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: trans,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Trans',
-                          hintText: '0',
-                          suffixText: 'g',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: saturated,
-                      validator: requiredNumber,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      decoration: const InputDecoration(
-                        labelText: 'Saturated',
-                        hintText: '0',
-                        suffixText: 'g',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: mono,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Mono Unsaturated',
-                          hintText: '0',
-                          suffixText: 'g',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: poly,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Poly Unsaturated',
+                          labelText: 'Saturated',
                           hintText: '0',
                           suffixText: 'g',
                         ),
@@ -368,17 +284,19 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: TextFormField(
-                        controller: carbohydrates,
-                        validator: requiredNumber,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Total',
-                          hintText: '0',
-                          suffixText: 'g',
+                      child: NeumorphicTextField(
+                        child: TextFormField(
+                          controller: carbohydrates,
+                          validator: requiredNumber,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: const InputDecoration(
+                            labelText: 'Total',
+                            hintText: '0',
+                            suffixText: 'g',
+                          ),
                         ),
                       ),
                     ),
@@ -386,33 +304,37 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(end: 8),
+                      child: NeumorphicTextField(
+                        child: TextFormField(
+                          controller: sugar,
+                          validator: requiredNumber,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: const InputDecoration(
+                            labelText: 'Sugar',
+                            hintText: '0',
+                            suffixText: 'g',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: NeumorphicTextField(
                       child: TextFormField(
-                        controller: sugar,
+                        controller: fibre,
                         validator: requiredNumber,
                         textInputAction: TextInputAction.next,
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
                         decoration: const InputDecoration(
-                          labelText: 'Sugar',
+                          labelText: 'Fibre',
                           hintText: '0',
                           suffixText: 'g',
                         ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: fibre,
-                      validator: requiredNumber,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      decoration: const InputDecoration(
-                        labelText: 'Fibre',
-                        hintText: '0',
-                        suffixText: 'g',
                       ),
                     ),
                   ),
@@ -424,18 +346,40 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 style: TextStyle(fontSize: 22),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: salt,
-                validator: requiredNumber,
-                textInputAction: TextInputAction.done,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Salt',
-                  hintText: '0',
-                  suffixText: 'g',
-                ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: NeumorphicTextField(
+                      child: TextFormField(
+                        controller: protein,
+                        validator: requiredNumber,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'Protein',
+                          hintText: '0',
+                          suffixText: 'g',
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: salt,
+                    validator: requiredNumber,
+                    textInputAction: TextInputAction.done,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Salt',
+                      hintText: '0',
+                      suffixText: 'g',
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

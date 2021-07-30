@@ -25,12 +25,9 @@ final tableRows = [
   IngredientTableMapRow(2, '  Sugar', (e) => e.sugar, 'g'),
   IngredientTableMapRow(3, '  Fibre', (e) => e.fibre, 'g'),
   IngredientTableMapRow(4, 'Fats', (e) => e.fats, 'g'),
-  IngredientTableMapRow(5, '  Trans', (e) => e.trans, 'g'),
-  IngredientTableMapRow(6, '  Saturated', (e) => e.saturated, 'g'),
-  IngredientTableMapRow(7, '  Monounsaturated', (e) => e.mono, 'g'),
-  IngredientTableMapRow(8, '  Polyunsaturated', (e) => e.poly, 'g'),
-  IngredientTableMapRow(9, 'Protein', (e) => e.protein, 'g'),
-  IngredientTableMapRow(10, 'Salt', (e) => e.salt, 'g'),
+  IngredientTableMapRow(5, '  Saturated', (e) => e.saturated, 'g'),
+  IngredientTableMapRow(6, 'Protein', (e) => e.protein, 'g'),
+  IngredientTableMapRow(7, 'Salt', (e) => e.salt, 'g'),
 ];
 
 class IngredientItem extends StatelessWidget {

@@ -20,7 +20,7 @@ class StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
         child: Stack(
           children: [
             Neumorphic(
@@ -53,7 +53,7 @@ class StatItem extends StatelessWidget {
               ),
             ),
             Container(
-              width: min(320, 320 * value / target),
+              width: max(24, min(320, 320 * value / target)),
               height: 24,
               decoration: BoxDecoration(
                 color: color,
@@ -67,16 +67,20 @@ class StatItem extends StatelessWidget {
                 ],
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
-              child: Center(
-                child: Text(
-                  format(value),
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: color.computeLuminance() > 0.5
-                        ? Colors.black
-                        : Colors.white,
-                  ),
-                ),
+              child: Container(
+                child: value / target < 0.1
+                    ? null
+                    : Center(
+                        child: Text(
+                          format(value),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.computeLuminance() > 0.5
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
               ),
             ),
           ],
