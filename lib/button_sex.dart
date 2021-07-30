@@ -24,7 +24,7 @@ class _SexButtonState extends State<SexButton> {
   Widget build(BuildContext context) => NeumorphicButton(
         onPressed: () {
           final v = (val + 1) % 2;
-          Preferences.sex.val = val + 1 % 2;
+          Preferences.sex.val = (val + 1) % 2;
           setState(() {
             val = v;
           });

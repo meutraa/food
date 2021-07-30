@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
@@ -218,7 +219,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 240,
+                    height: 280,
                     width: 320,
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -234,20 +235,21 @@ class _StatisticsPageState extends State<StatisticsPage>
                                 return 'Protein';
                             }
                           },
-                          tickCount: 6,
+                          tickCount: 1,
                           titlePositionPercentageOffset: 0.2,
                           titleTextStyle: const TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 12,
                           ),
                           ticksTextStyle:
                               const TextStyle(color: Colors.transparent),
                           dataSets: [
                             RadarDataSet(
-                              borderColor: Colors.black,
+                              borderColor: Colors.white.withOpacity(0.8),
                               borderWidth: 0.5,
-                              entryRadius: 2,
-                              fillColor: Colors.white.withOpacity(0.5),
+                              entryRadius: 0,
+                              fillColor: Colors.white.withOpacity(0.2),
                               dataEntries: [
                                 RadarEntry(value: totalEnergyFat),
                                 RadarEntry(value: totalEnergyCarbs),
