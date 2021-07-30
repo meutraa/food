@@ -9,7 +9,9 @@ import 'data/portion.dart';
 import 'date.dart';
 import 'item_stat.dart';
 import 'objectbox.g.dart';
+import 'page_preferences.dart';
 import 'streamed.dart';
+import 'util/calculations.dart';
 import 'util/preferences.dart';
 
 // ignore_for_file: cascade_invocations
@@ -60,15 +62,15 @@ class _StatisticsPageState extends State<StatisticsPage>
     with AutomaticKeepAliveClientMixin {
   late final DateTime startTime;
 
-  late final double totalGramsProtein;
-  late final double totalEnergyProtein;
+  double totalGramsProtein = 0;
+  double totalEnergyProtein = 0;
 
-  late final double totalEnergyFat;
-  late final double totalEnergyCarbs;
-  late final double totalGramsFat;
-  late final double totalGramsCarbs;
+  double totalEnergyFat = 0;
+  double totalEnergyCarbs = 0;
+  double totalGramsFat = 0;
+  double totalGramsCarbs = 0;
 
-  late final List<StatData> stats;
+  List<StatData> stats = [];
 
   Future<Stats> updateStats(List<Portion> portions) async {
     final stats = Stats();
@@ -95,12 +97,14 @@ class _StatisticsPageState extends State<StatisticsPage>
       now.day - (now.hour >= 5 ? 0 : 1),
       5,
     );
+    genStats();
+  }
 
+  void genStats() {
     final bodyWeight = Preferences.mass.val;
-    final totalEnergy = Preferences.energy.val;
+    final totalEnergy = (bmr() * Preferences.calPerc.val) / 100;
 
-// Protein based on weight
-    totalGramsProtein = (bodyWeight * Preferences.proteinPercMult.val) / 100;
+    totalGramsProtein = (bodyWeight * Preferences.protein.val) / 100;
     totalEnergyProtein = totalGramsProtein * 4;
 
     final usableEnergy = totalEnergy - totalEnergyProtein;
@@ -114,7 +118,7 @@ class _StatisticsPageState extends State<StatisticsPage>
         label: 'Energy',
         value: (d) => d.consumedEnergy,
         target: totalEnergy.toDouble(),
-        format: (d) => '${d.toStringAsFixed(0)} Kcal',
+        format: (d) => '${d.toStringAsFixed(0)} kcal',
         color: Colors.deepPurpleAccent,
       ),
       StatData(
@@ -164,7 +168,12 @@ class _StatisticsPageState extends State<StatisticsPage>
                 child: Padding(
                   padding: const EdgeInsetsDirectional.only(end: 8),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PreferencePage(),
+                      ),
+                    ).then((value) => setState(genStats)),
                     icon: NeumorphicIcon(
                       Icons.settings_rounded,
                       size: 32,

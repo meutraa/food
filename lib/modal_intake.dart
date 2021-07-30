@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:objectbox/objectbox.dart';
 
 import 'data/ingredient.dart';
@@ -30,28 +31,37 @@ Future<void> showIntakeDialog(
         padding: const EdgeInsets.only(top: 24),
         child: Form(
           key: _formKey,
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                flex: 4,
-                child: Autocomplete<Portion>(
-                  displayStringForOption: (v) => v.name,
-                  optionsBuilder: (v) {
-                    if (v.text == '') {
-                      return const Iterable<Portion>.empty();
-                    }
-                    final t = v.text.toLowerCase();
-                    return portions
-                        .where(
-                          (b) => b.name.toLowerCase().contains(t),
-                        )
-                        .toList(growable: false);
-                  },
-                  fieldViewBuilder: (context, textEditingController, focusNode,
-                          onFieldSubmitted) =>
-                      TextFormField(
+              Autocomplete<Portion>(
+                displayStringForOption: (v) => v.name,
+                optionsBuilder: (v) {
+                  if (v.text == '') {
+                    return const Iterable<Portion>.empty();
+                  }
+                  final t = v.text.toLowerCase();
+                  return portions
+                      .where(
+                        (b) => b.name.toLowerCase().contains(t),
+                      )
+                      .toList(growable: false);
+                },
+                fieldViewBuilder: (context, textEditingController, focusNode,
+                        onFieldSubmitted) =>
+                    Neumorphic(
+                  style: const NeumorphicStyle(
+                    depth: -4,
+                    border: NeumorphicBorder(
+                      color: Color(0x88ffffff),
+                      width: 0.5,
+                    ),
+                    shadowLightColorEmboss: Colors.grey,
+                    shadowDarkColorEmboss: Colors.black,
+                    color: Colors.grey,
+                  ),
+                  child: TextFormField(
                     textInputAction: TextInputAction.next,
                     autofocus: true,
                     decoration: const InputDecoration(
@@ -67,13 +77,22 @@ Future<void> showIntakeDialog(
                     },
                     focusNode: focusNode,
                   ),
-                  onSelected: (v) => portion = v,
                 ),
+                onSelected: (v) => portion = v,
               ),
-              Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 16),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 128, top: 8),
+                child: Neumorphic(
+                  style: const NeumorphicStyle(
+                    depth: -4,
+                    border: NeumorphicBorder(
+                      color: Color(0x88ffffff),
+                      width: 0.5,
+                    ),
+                    shadowLightColorEmboss: Colors.grey,
+                    shadowDarkColorEmboss: Colors.black,
+                    color: Colors.grey,
+                  ),
                   child: TextFormField(
                     controller: _massController,
                     validator: requiredNumber,

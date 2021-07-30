@@ -20,7 +20,7 @@ class IngredientTableMapRow {
 }
 
 final tableRows = [
-  IngredientTableMapRow(0, 'Energy', (e) => e.energy, 'Kcal'),
+  IngredientTableMapRow(0, 'Energy', (e) => e.energy, 'kcal'),
   IngredientTableMapRow(1, 'Carbohydrates', (e) => e.carbohydrates, 'g'),
   IngredientTableMapRow(2, '  Sugar', (e) => e.sugar, 'g'),
   IngredientTableMapRow(3, '  Fibre', (e) => e.fibre, 'g'),

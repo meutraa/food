@@ -210,7 +210,7 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                   decoration: const InputDecoration(
                     labelText: 'Energy',
                     hintText: '0',
-                    suffixText: 'Kcal',
+                    suffixText: 'kcal',
                   ),
                 ),
               ),
