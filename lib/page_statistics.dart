@@ -4,13 +4,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/preferences.dart';
 
 import 'data/portion.dart';
 import 'date.dart';
 import 'item_stat.dart';
 import 'objectbox.g.dart';
 import 'streamed.dart';
+import 'util/preferences.dart';
 
 // ignore_for_file: cascade_invocations
 
@@ -56,7 +56,8 @@ class StatData {
   });
 }
 
-class _StatisticsPageState extends State<StatisticsPage> {
+class _StatisticsPageState extends State<StatisticsPage>
+    with AutomaticKeepAliveClientMixin {
   late final DateTime startTime;
 
   late final double totalGramsProtein;
@@ -141,191 +142,197 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Streamed<Portion>(
-        store: widget.store,
-        orderField: Portion_.id,
-        condition: Portion_.time.greaterThan(startTime.millisecondsSinceEpoch),
-        builder: (context, items) => FutureBuilder<Stats>(
-          future: updateStats(items),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final d = snapshot.data!;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: NeumorphicIcon(
-                        Icons.settings_rounded,
-                        size: 32,
-                        style: NeumorphicStyle(
-                          color: Colors.white,
-                        ),
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Streamed<Portion>(
+      store: widget.store,
+      orderField: Portion_.id,
+      condition: Portion_.time.greaterThan(startTime.millisecondsSinceEpoch),
+      builder: (context, items) => FutureBuilder<Stats>(
+        future: updateStats(items),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final d = snapshot.data!;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.topEnd,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 8),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: NeumorphicIcon(
+                      Icons.settings_rounded,
+                      size: 32,
+                      style: const NeumorphicStyle(
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-                Center(
-                  child: Text(
-                    weekdays[startTime.weekday],
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w200,
-                    ),
+              ),
+              Center(
+                child: Text(
+                  weekdays[startTime.weekday],
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w200,
                   ),
                 ),
-                const Center(
-                  child: Text(
-                    'the',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w200,
-                    ),
+              ),
+              const Center(
+                child: Text(
+                  'the',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w200,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Center(
-                  child: Text(
-                    '${startTime.day}${daySuffix(startTime.day)} of '
-                    '${months[startTime.month]}',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w300,
-                    ),
+              ),
+              const SizedBox(height: 2),
+              Center(
+                child: Text(
+                  '${startTime.day}${daySuffix(startTime.day)} of '
+                  '${months[startTime.month]}',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w300,
                   ),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 240,
-                      width: 320,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: RadarChart(
-                          RadarChartData(
-                            getTitle: (i) {
-                              switch (i) {
-                                case 0:
-                                  return 'Fats';
-                                case 1:
-                                  return 'Carbs';
-                                default:
-                                  return 'Protein';
-                              }
-                            },
-                            tickCount: 6,
-                            titlePositionPercentageOffset: 0.2,
-                            titleTextStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 240,
+                    width: 320,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: RadarChart(
+                        RadarChartData(
+                          getTitle: (i) {
+                            switch (i) {
+                              case 0:
+                                return 'Fats';
+                              case 1:
+                                return 'Carbs';
+                              default:
+                                return 'Protein';
+                            }
+                          },
+                          tickCount: 6,
+                          titlePositionPercentageOffset: 0.2,
+                          titleTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
+                          ticksTextStyle:
+                              const TextStyle(color: Colors.transparent),
+                          dataSets: [
+                            RadarDataSet(
+                              borderColor: Colors.black,
+                              borderWidth: 0.5,
+                              entryRadius: 2,
+                              fillColor: Colors.white.withOpacity(0.5),
+                              dataEntries: [
+                                RadarEntry(value: totalEnergyFat),
+                                RadarEntry(value: totalEnergyCarbs),
+                                RadarEntry(value: totalEnergyProtein),
+                              ],
                             ),
-                            ticksTextStyle:
-                                const TextStyle(color: Colors.transparent),
-                            dataSets: [
-                              RadarDataSet(
-                                borderColor: Colors.black,
-                                borderWidth: 0.5,
-                                entryRadius: 2,
-                                fillColor: Colors.white.withOpacity(0.5),
-                                dataEntries: [
-                                  RadarEntry(value: totalEnergyFat),
-                                  RadarEntry(value: totalEnergyCarbs),
-                                  RadarEntry(value: totalEnergyProtein),
-                                ],
-                              ),
-                              RadarDataSet(
-                                borderColor: () {
-                                  final m = max(
-                                    max(
-                                      d.consumedCarbs,
-                                      d.consumedProtein,
-                                    ),
-                                    d.consumedFats,
-                                  );
-                                  if (m == d.consumedCarbs) {
-                                    return Colors.pinkAccent;
-                                  }
-                                  if (m == d.consumedFats) {
-                                    return Colors.yellowAccent;
-                                  }
-                                  if (m == d.consumedProtein) {
-                                    return Colors.orangeAccent;
-                                  }
-                                }(),
-                                borderWidth: 0.5,
-                                entryRadius: 3,
-                                fillColor: Colors.white.withOpacity(0.5),
-                                dataEntries: [
-                                  RadarEntry(value: d.consumedFats * 9),
-                                  RadarEntry(value: d.consumedCarbs * 4),
-                                  RadarEntry(value: d.consumedProtein * 4),
-                                ],
-                              ),
-                            ],
-                            tickBorderData: BorderSide(
-                              color: Colors.white.withOpacity(0.25),
-                              width: 0.5,
+                            RadarDataSet(
+                              borderColor: () {
+                                final m = max(
+                                  max(
+                                    d.consumedCarbs,
+                                    d.consumedProtein,
+                                  ),
+                                  d.consumedFats,
+                                );
+                                if (m == d.consumedCarbs) {
+                                  return Colors.pinkAccent;
+                                }
+                                if (m == d.consumedFats) {
+                                  return Colors.yellowAccent;
+                                }
+                                if (m == d.consumedProtein) {
+                                  return Colors.orangeAccent;
+                                }
+                              }(),
+                              borderWidth: 0.5,
+                              entryRadius: 3,
+                              fillColor: Colors.white.withOpacity(0.5),
+                              dataEntries: [
+                                RadarEntry(value: d.consumedFats * 9),
+                                RadarEntry(value: d.consumedCarbs * 4),
+                                RadarEntry(value: d.consumedProtein * 4),
+                              ],
                             ),
-                            borderData: FlBorderData(show: false),
-                            gridBorderData: BorderSide(
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                            radarBorderData: const BorderSide(
-                              color: Colors.transparent,
-                            ),
+                          ],
+                          tickBorderData: BorderSide(
+                            color: Colors.white.withOpacity(0.25),
+                            width: 0.5,
+                          ),
+                          borderData: FlBorderData(show: false),
+                          gridBorderData: BorderSide(
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                          radarBorderData: const BorderSide(
+                            color: Colors.transparent,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-                ...stats
-                    .map(
-                      (s) => [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                s.label,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                ),
+                  ),
+                ],
+              ),
+              ...stats
+                  .map(
+                    (s) => [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              s.label,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
                               ),
-                              Text(
-                                s.format(s.target),
-                                style: const TextStyle(fontSize: 11),
-                              )
-                            ],
-                          ),
+                            ),
+                            Text(
+                              s.format(s.target),
+                              style: const TextStyle(fontSize: 11),
+                            )
+                          ],
                         ),
-                        StatItem(
-                          value: s.value(d),
-                          target: s.target,
-                          format: s.format,
-                          color: s.color,
-                        ),
-                      ],
-                    )
-                    .expand((e) => e)
-                    .toList(growable: false)
-              ],
-            );
-          },
-        ),
-      );
+                      ),
+                      StatItem(
+                        value: s.value(d),
+                        target: s.target,
+                        format: s.format,
+                        color: s.color,
+                      ),
+                    ],
+                  )
+                  .expand((e) => e)
+                  .toList(growable: false)
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

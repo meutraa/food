@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/preferences.dart';
 
 import 'objectbox.g.dart';
 import 'page_home.dart';
+import 'style.dart';
+import 'util/preferences.dart';
 
 class Application extends StatefulWidget {
   const Application({
@@ -55,7 +56,6 @@ class _ApplicationState extends State<Application> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
-            filled: true,
             errorStyle: TextStyle(fontSize: 1),
             errorBorder: InputBorder.none,
             border: InputBorder.none,
@@ -83,10 +83,7 @@ class _ApplicationState extends State<Application> {
           buttonStyle: const NeumorphicStyle(
             depth: 8,
             boxShape: NeumorphicBoxShape.circle(),
-            border: NeumorphicBorder(
-              color: Color(0x33ffffff),
-              width: 0.5,
-            ),
+            border: lightBorder,
           ),
           accentColor: Colors.yellowAccent.shade100,
         ),

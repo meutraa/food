@@ -7,10 +7,10 @@ import 'package:flutter/widgets.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
+import 'date.dart';
 import 'item_ingredient.dart';
 import 'modal_confirm.dart';
 import 'objectbox.g.dart';
-import 'date.dart';
 
 class PortionItem extends StatefulWidget {
   final Portion portion;

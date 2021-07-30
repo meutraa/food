@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'style.dart';
 
 class StatItem extends StatelessWidget {
   final String Function(double) format;
@@ -20,70 +21,16 @@ class StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
-        child: Stack(
-          children: [
-            Neumorphic(
-              style: NeumorphicStyle(
-                depth: 8,
-                boxShape: const NeumorphicBoxShape.stadium(),
-                shadowLightColor: Colors.lightBlue.shade300,
-                lightSource: LightSource.top,
-              ),
-              child: const SizedBox(
-                width: 320,
-                height: 24,
-              ),
-            ),
-            Neumorphic(
-              style: const NeumorphicStyle(
-                depth: -8,
-                lightSource: LightSource.top,
-                intensity: 1,
-                boxShape: NeumorphicBoxShape.stadium(),
-                border: NeumorphicBorder(
-                  color: Color(0x33000000),
-                  width: 1,
-                ),
-              ),
-              child: Container(
-                width: 320,
-                height: 24,
-                color: Colors.white,
-              ),
-            ),
-            Container(
-              width: max(24, min(320, 320 * value / target)),
-              height: 24,
-              decoration: BoxDecoration(
-                color: color,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.33),
-                    spreadRadius: 1,
-                    blurRadius: 1,
-                    offset: const Offset(1, 0), // changes position of shadow
-                  ),
-                ],
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Container(
-                child: value / target < 0.1
-                    ? null
-                    : Center(
-                        child: Text(
-                          format(value),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: color.computeLuminance() > 0.5
-                                ? Colors.black
-                                : Colors.white,
-                          ),
-                        ),
-                      ),
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
+        child: NeumorphicProgress(
+          percent: max(0.12, min(1, value / target)),
+          height: 16,
+          style: ProgressStyle(
+            depth: 4,
+            border: lightBorder,
+            accent: color,
+            variant: color,
+          ),
         ),
       );
 }

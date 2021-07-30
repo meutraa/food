@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/neumorphic_text_field.dart';
 import 'package:objectbox/internal.dart';
 
+import 'neumorphic_text_field.dart';
 import 'objectbox.g.dart';
 import 'streamed.dart';
 
@@ -28,7 +28,8 @@ class DataList<T> extends StatefulWidget {
   _DataListState<T> createState() => _DataListState<T>();
 }
 
-class _DataListState<T> extends State<DataList<T>> {
+class _DataListState<T> extends State<DataList<T>>
+    with AutomaticKeepAliveClientMixin {
   var _filter = '';
   final _filterController = TextEditingController();
 
@@ -51,75 +52,81 @@ class _DataListState<T> extends State<DataList<T>> {
   }
 
   @override
-  Widget build(BuildContext context) => Streamed<T>(
-        orderField: widget.orderField,
-        store: widget.store,
-        condition: widget.condition,
-        builder: (context, items) {
-          final data = items
-              .where(
-                (e) => widget.searchString(e).toLowerCase().contains(_filter),
-              )
-              .toList(growable: false);
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Streamed<T>(
+      orderField: widget.orderField,
+      store: widget.store,
+      condition: widget.condition,
+      builder: (context, items) {
+        final data = items
+            .where(
+              (e) => widget.searchString(e).toLowerCase().contains(_filter),
+            )
+            .toList(growable: false);
 
-          if (data.isEmpty && _filter.isEmpty) {
-            return const SizedBox.shrink();
-          }
+        if (data.isEmpty && _filter.isEmpty) {
+          return const SizedBox.shrink();
+        }
 
-          return Stack(
-            children: [
-              ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.lightBlue,
-                      Colors.lightBlue,
-                      Colors.transparent,
-                      Colors.transparent,
-                    ],
-                    stops: [
-                      0.0,
-                      0.1,
-                      0.85,
-                      0.91,
-                      1.0,
-                    ]).createShader(bounds),
-                blendMode: BlendMode.dstIn,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 96),
-                  reverse: true,
-                  itemBuilder: (context, i) =>
-                      widget.itemBuilder(context, data[i]),
-                  itemCount: data.length,
-                ),
+        return Stack(
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.lightBlue,
+                    Colors.lightBlue,
+                    Colors.transparent,
+                    Colors.transparent,
+                  ],
+                  stops: [
+                    0.0,
+                    0.1,
+                    0.85,
+                    0.91,
+                    1.0,
+                  ]).createShader(bounds),
+              blendMode: BlendMode.dstIn,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 96),
+                reverse: true,
+                itemBuilder: (context, i) =>
+                    widget.itemBuilder(context, data[i]),
+                itemCount: data.length,
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 14,
-                    bottom: 14,
-                    left: 16,
-                    right: 92,
-                  ),
-                  child: NeumorphicTextField(
-                    child: TextFormField(
-                      controller: _filterController,
-                      textInputAction: TextInputAction.search,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        alignLabelWithHint: true,
-                        hintText: widget.hint,
-                      ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 14,
+                  bottom: 14,
+                  left: 16,
+                  right: 92,
+                ),
+                child: NeumorphicTextField(
+                  child: TextFormField(
+                    controller: _filterController,
+                    textInputAction: TextInputAction.search,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      alignLabelWithHint: true,
+                      hintText: widget.hint,
                     ),
                   ),
                 ),
               ),
-            ],
-          );
-        },
-      );
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

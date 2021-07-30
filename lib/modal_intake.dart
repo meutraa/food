@@ -4,7 +4,7 @@ import 'package:objectbox/objectbox.dart';
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
-import 'page_edit_ingredient.dart';
+import 'util/validate.dart';
 
 Future<void> showIntakeDialog(
   BuildContext context, {

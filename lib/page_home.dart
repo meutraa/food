@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/style.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -14,6 +13,7 @@ import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 import 'page_edit_recipe.dart';
 import 'page_statistics.dart';
+import 'style.dart';
 
 class HomePage extends StatefulWidget {
   final Store store;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:food/neumorphic_text_field.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
 import 'modal_confirm.dart';
+import 'neumorphic_text_field.dart';
 import 'objectbox.g.dart';
-import 'page_edit_ingredient.dart';
+import 'util/validate.dart';
 
 class EditRecipePage extends StatefulWidget {
   final Recipe? recipe;
