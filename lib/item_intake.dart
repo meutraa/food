@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:food/modal_intake.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -244,17 +245,11 @@ class _PortionItemState extends State<PortionItem> {
                   vertical: 8,
                 ),
                 child: TextButton.icon(
-                  onPressed: () {
-                    // Navigator.push<void>(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => EditPortionPage(
-                    //       store: widget.store,
-                    //       portion: widget.portion,
-                    //     ),
-                    //   ),
-                    // );
-                  },
+                  onPressed: () => showIntakeDialog(
+                    context,
+                    store: widget.store,
+                    initialPortion: widget.portion,
+                  ),
                   icon: const Icon(
                     Icons.edit_outlined,
                     color: Colors.white,

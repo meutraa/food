@@ -10,6 +10,7 @@ import 'util/validate.dart';
 Future<void> showIntakeDialog(
   BuildContext context, {
   required Store store,
+  Portion? initialPortion,
 }) async {
   final recipes = store.box<Recipe>().getAll().map(
         (e) => Portion(mass: 0)..recipe.target = e,
@@ -19,8 +20,10 @@ Future<void> showIntakeDialog(
       );
   final portions = recipes.toList()..addAll(ingredients);
 
-  Portion? portion;
-  final _massController = TextEditingController();
+  Portion? portion = initialPortion;
+  final _massController = TextEditingController(
+    text: initialPortion?.mass.toStringAsFixed(1),
+  );
   final _formKey = GlobalKey<FormState>();
 
   return showDialog<void>(
@@ -63,12 +66,13 @@ Future<void> showIntakeDialog(
                   ),
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
-                    autofocus: true,
+                    autofocus: initialPortion == null,
                     decoration: const InputDecoration(
                       labelText: 'Recipe/Ingredient',
                       hintText: 'Hummous',
                     ),
-                    controller: textEditingController,
+                    controller: textEditingController
+                      ..text = initialPortion?.name ?? '',
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Required';
@@ -95,6 +99,7 @@ Future<void> showIntakeDialog(
                   ),
                   child: TextFormField(
                     controller: _massController,
+                    autofocus: initialPortion != null,
                     validator: requiredNumber,
                     textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.number,

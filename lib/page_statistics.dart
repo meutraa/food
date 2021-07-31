@@ -339,20 +339,34 @@ class _StatisticsPageState extends State<StatisticsPage>
                           horizontal: 32,
                           vertical: 8,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Table(
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          columnWidths: const {
+                            0: FlexColumnWidth(2),
+                            1: FlexColumnWidth(),
+                            2: FlexColumnWidth(),
+                          },
                           children: [
-                            Text(
-                              s.label,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
+                            TableRow(children: [
+                              Text(
+                                s.label,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w300,
+                                ),
                               ),
-                            ),
-                            Text(
-                              s.format(s.target),
-                              style: const TextStyle(fontSize: 11),
-                            )
+                              Text(
+                                '${(s.value(d) * 100 / s.target).toStringAsFixed(0)}%',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              Text(
+                                s.format(s.target),
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(fontSize: 11),
+                              )
+                            ])
                           ],
                         ),
                       ),

@@ -104,7 +104,10 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   onPressed: () => showConfirmDialog(
                     context,
                     title: 'Discard Changes?',
-                    onConfirmed: () => Navigator.pop(context),
+                    onConfirmed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      Navigator.pop(context);
+                    },
                   ),
                   icon: const Icon(
                     Icons.cancel_outlined,
@@ -128,6 +131,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                     final valid = _formKey.currentState?.validate();
                     if (valid ?? false) {
                       await saveValue();
+                      FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.of(context).pop();
                     }
                   },
