@@ -23,7 +23,7 @@ class StatItem extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
         child: NeumorphicProgress(
-          percent: max(0.12, min(1, value / target)),
+          percent: min(1, value / target),
           height: 16,
           style: ProgressStyle(
             depth: 4,

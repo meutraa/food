@@ -32,6 +32,7 @@ const weekdays = [
 ];
 
 const months = [
+  '',
   'January',
   'February',
   'March',

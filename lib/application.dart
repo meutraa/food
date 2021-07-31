@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
@@ -21,13 +23,13 @@ class _ApplicationState extends State<Application> {
 
   @override
   void initState() {
+    super.initState();
     loading = Future.wait([
       Preferences().init(),
       () async {
         store = await openStore();
       }()
     ]);
-    super.initState();
   }
 
   @override

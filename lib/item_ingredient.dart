@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'data/ingredient.dart';
 import 'objectbox.g.dart';
@@ -45,12 +46,16 @@ class IngredientItem extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              ingredient.name,
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-                fontWeight: FontWeight.w300,
+            Flexible(
+              child: Text(
+                ingredient.name,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontSize: 20,
+                  overflow: TextOverflow.ellipsis,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w300,
+                ),
               ),
             ),
             Text(
@@ -195,6 +200,32 @@ class IngredientItem extends StatelessWidget {
                   vertical: 8,
                 ),
                 child: TextButton.icon(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: QrImage(
+                        data: ingredient.toString(),
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.share_rounded,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Share',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 36,
+                  vertical: 8,
+                ),
+                child: TextButton.icon(
                   onPressed: () {
                     Navigator.push<void>(
                       context,
@@ -217,7 +248,7 @@ class IngredientItem extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           )
         ],

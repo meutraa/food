@@ -1,3 +1,4 @@
-check if food is used before deleting
+check if ingredient is used before deleting
 prune unused portions
-share recipe/food by qr?
+share recipe by qr?
+detect duplicate recipes/ingredients when sharing

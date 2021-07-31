@@ -3,7 +3,7 @@ String? requiredNumber(String? val) {
     return 'Required';
   }
   final d = double.tryParse(val);
-  if (null == d || d == 0.0) {
+  if (null == d) {
     return 'Required';
   }
   return null;

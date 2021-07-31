@@ -4,7 +4,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/data/ingredient.dart';
 
 import 'data/portion.dart';
 import 'date.dart';
@@ -164,26 +166,53 @@ class _StatisticsPageState extends State<StatisticsPage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 8),
-                  child: IconButton(
-                    onPressed: () => Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PreferencePage(),
-                      ),
-                    ).then((value) => setState(genStats)),
-                    icon: NeumorphicIcon(
-                      Icons.settings_rounded,
-                      size: 32,
-                      style: const NeumorphicStyle(
-                        color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 8),
+                    child: IconButton(
+                      onPressed: () async {
+                        final data = await FlutterBarcodeScanner.scanBarcode(
+                          '#ffffff',
+                          'Cancel',
+                          true,
+                          ScanMode.QR,
+                        );
+                        if (data.isEmpty) {
+                          return;
+                        }
+                        final ing = Ingredient.fromJson(data);
+                        widget.store.box<Ingredient>().put(ing);
+                      },
+                      icon: NeumorphicIcon(
+                        Icons.qr_code_rounded,
+                        size: 32,
+                        style: const NeumorphicStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: IconButton(
+                      onPressed: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PreferencePage(),
+                        ),
+                      ).then((value) => setState(genStats)),
+                      icon: NeumorphicIcon(
+                        Icons.settings_rounded,
+                        size: 32,
+                        style: const NeumorphicStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Center(
                 child: Text(

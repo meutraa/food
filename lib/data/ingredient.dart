@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
@@ -46,6 +48,36 @@ class Ingredient {
     this.protein = 0,
     this.salt = 0,
   });
+
+  @override
+  String toString() => jsonEncode(<String, dynamic>{
+        'mass': mass,
+        'name': name,
+        'energy': energy,
+        'fats': fats,
+        'saturated': saturated,
+        'carbohydrates': carbohydrates,
+        'sugar': sugar,
+        'fibre': fibre,
+        'protein': protein,
+        'salt': salt,
+      });
+
+  static Ingredient fromJson(String val) {
+    final m = jsonDecode(val) as Map<String, dynamic>;
+    return Ingredient(
+      mass: m['mass'] as double,
+      name: m['name'] as String,
+      energy: m['energy'] as double,
+      fats: m['fats'] as double,
+      saturated: m['saturated'] as double,
+      carbohydrates: m['carbohydrates'] as double,
+      sugar: m['sugar'] as double,
+      fibre: m['fibre'] as double,
+      protein: m['protein'] as double,
+      salt: m['salt'] as double,
+    );
+  }
 
   Ingredient mash(double mass) {
     final ratio = mass / this.mass;
