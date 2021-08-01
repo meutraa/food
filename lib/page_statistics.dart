@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/data/ingredient.dart';
+import 'data/ingredient.dart';
 
 import 'data/portion.dart';
 import 'date.dart';

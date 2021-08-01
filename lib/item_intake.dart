@@ -4,13 +4,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:food/modal_intake.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'date.dart';
 import 'item_ingredient.dart';
 import 'modal_confirm.dart';
+import 'modal_intake.dart';
 import 'objectbox.g.dart';
 
 class PortionItem extends StatefulWidget {

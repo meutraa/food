@@ -202,9 +202,21 @@ class IngredientItem extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: () => showDialog<void>(
                     context: context,
+                    barrierColor: null,
                     builder: (context) => Dialog(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(24)),
+                      ),
                       child: QrImage(
                         data: ingredient.toString(),
+                        eyeStyle: const QrEyeStyle(
+                          eyeShape: QrEyeShape.circle,
+                          color: Colors.white,
+                        ),
+                        dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),

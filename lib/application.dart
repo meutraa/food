@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
+import 'data/ingredient.dart';
+import 'data/initial.dart';
 import 'objectbox.g.dart';
 import 'page_home.dart';
 import 'style.dart';
@@ -25,9 +28,19 @@ class _ApplicationState extends State<Application> {
   void initState() {
     super.initState();
     loading = Future.wait([
-      Preferences().init(),
       () async {
+        await Preferences().init();
         store = await openStore();
+        // Load initial data in if new data
+        if (initialDataVersion > Preferences.initialDataVersion.val) {
+          /*store
+              .box<Ingredient>()
+              .query(Ingredient_.description.notNull())
+              .build()
+              .remove();*/
+          store.box<Ingredient>().putMany(foods);
+          Preferences.initialDataVersion.val = initialDataVersion;
+        }
       }()
     ]);
   }
@@ -89,17 +102,25 @@ class _ApplicationState extends State<Application> {
           ),
           accentColor: Colors.yellowAccent.shade100,
         ),
-        home: FutureBuilder<void>(
-          future: loading,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(child: Text(snapshot.error.toString()));
-            }
-            if (!snapshot.hasData) {
-              return const Scaffold();
-            }
-            return HomePage(store: store);
-          },
+        home: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            systemNavigationBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+          child: FutureBuilder<void>(
+            future: loading,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: Text(snapshot.error.toString()));
+              }
+              if (!snapshot.hasData) {
+                return const Scaffold();
+              }
+              return HomePage(store: store);
+            },
+          ),
         ),
       );
 }

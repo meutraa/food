@@ -7,6 +7,7 @@ class Ingredient {
   int id;
 
   final String name;
+  final String? description;
 
   double mass; // in g
   double energy; // in kcal
@@ -33,7 +34,24 @@ class Ingredient {
     required this.protein,
     required this.salt,
     this.id = 0,
+    this.description,
   });
+
+  Ingredient.initial(
+    this.name,
+    this.description,
+    this.energy,
+    this.fats,
+    this.saturated,
+    this.carbohydrates,
+    this.sugar,
+    double nsp,
+    double aoac,
+    this.protein, {
+    this.salt = 0,
+    this.id = 0,
+  })  : mass = 100,
+        fibre = aoac == -1 ? (nsp == -1 ? 0 : nsp) : aoac;
 
   Ingredient.mash({
     required this.mass,
@@ -47,6 +65,7 @@ class Ingredient {
     this.fibre = 0,
     this.protein = 0,
     this.salt = 0,
+    this.description,
   });
 
   @override

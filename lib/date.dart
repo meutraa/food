@@ -28,7 +28,7 @@ const weekdays = [
   'Thursday',
   'Friday',
   'Saturday',
-  'Friday',
+  'Sunday',
 ];
 
 const months = [

@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "6:4101147900017153457",
-      "lastPropertyId": "14:7284364091020943374",
+      "lastPropertyId": "15:2955767762301129367",
       "name": "Ingredient",
       "properties": [
         {
@@ -63,6 +63,11 @@
           "id": "14:7284364091020943374",
           "name": "salt",
           "type": 8
+        },
+        {
+          "id": "15:2955767762301129367",
+          "name": "description",
+          "type": 9
         }
       ],
       "relations": []

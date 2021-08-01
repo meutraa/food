@@ -28,6 +28,7 @@ Future<void> showIntakeDialog(
 
   return showDialog<void>(
     context: context,
+    barrierColor: null,
     barrierDismissible: false,
     builder: (context) => AlertDialog(
       content: Padding(
@@ -131,6 +132,7 @@ Future<void> showIntakeDialog(
             }
 
             final p = Portion(
+              id: portion?.id ?? 0,
               mass: double.tryParse(_massController.text) ?? 0,
               time: DateTime.now(),
             );

@@ -10,6 +10,7 @@ Future<void> showConfirmDialog(
     showDialog<void>(
       context: context,
       barrierDismissible: true,
+      barrierColor: null,
       builder: (context) => AlertDialog(
         title: Text(title ?? ''),
         content: body == null ? null : Text(body),

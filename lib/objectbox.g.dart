@@ -19,7 +19,7 @@ final _entities = <ModelEntity>[
   ModelEntity(
       id: const IdUid(6, 4101147900017153457),
       name: 'Ingredient',
-      lastPropertyId: const IdUid(14, 7284364091020943374),
+      lastPropertyId: const IdUid(15, 2955767762301129367),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
@@ -76,6 +76,11 @@ final _entities = <ModelEntity>[
             id: const IdUid(14, 7284364091020943374),
             name: 'salt',
             type: 8,
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(15, 2955767762301129367),
+            name: 'description',
+            type: 9,
             flags: 0)
       ],
       relations: <ModelRelation>[],
@@ -243,7 +248,10 @@ ModelDefinition getObjectBoxModel() {
         },
         objectToFB: (Ingredient object, fb.Builder fbb) {
           final nameOffset = fbb.writeString(object.name);
-          fbb.startTable(15);
+          final descriptionOffset = object.description == null
+              ? null
+              : fbb.writeString(object.description!);
+          fbb.startTable(16);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, nameOffset);
           fbb.addFloat64(2, object.mass);
@@ -255,6 +263,7 @@ ModelDefinition getObjectBoxModel() {
           fbb.addFloat64(11, object.fibre);
           fbb.addFloat64(12, object.protein);
           fbb.addFloat64(13, object.salt);
+          fbb.addOffset(14, descriptionOffset);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -283,7 +292,9 @@ ModelDefinition getObjectBoxModel() {
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 28, 0),
               salt:
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 30, 0),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0));
+              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              description: const fb.StringReader()
+                  .vTableGetNullable(buffer, rootOffset, 32));
 
           return object;
         }),
@@ -407,6 +418,10 @@ class Ingredient_ {
   /// see [Ingredient.salt]
   static final salt =
       QueryDoubleProperty<Ingredient>(_entities[0].properties[10]);
+
+  /// see [Ingredient.description]
+  static final description =
+      QueryStringProperty<Ingredient>(_entities[0].properties[11]);
 }
 
 /// [Portion] entity fields to define ObjectBox queries.

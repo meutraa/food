@@ -59,6 +59,8 @@ class Preferences {
 
   Preferences._private();
 
+  static late final IntPreference initialDataVersion;
+
   static late final IntPreference mass;
   static late final IntPreference age;
   static late final IntPreference sex;
@@ -71,6 +73,11 @@ class Preferences {
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
+    initialDataVersion = IntPreference(
+      prefs,
+      key: 'initialDataVersion',
+      defaultValue: 0,
+    );
     calPerc = IntPreference(prefs, key: 'energy', defaultValue: 100);
     fatPerc = IntPreference(prefs, key: 'fat', defaultValue: 70);
     protein = IntPreference(prefs, key: 'protein', defaultValue: 80);
