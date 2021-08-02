@@ -5,6 +5,7 @@ import 'package:objectbox/objectbox.dart';
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
+import 'objectbox.g.dart';
 import 'util/validate.dart';
 
 Future<void> showIntakeDialog(
@@ -15,7 +16,12 @@ Future<void> showIntakeDialog(
   final recipes = store.box<Recipe>().getAll().map(
         (e) => Portion(mass: 0)..recipe.target = e,
       );
-  final ingredients = store.box<Ingredient>().getAll().map(
+  final ingredients = store
+      .box<Ingredient>()
+      .query(Ingredient_.hidden.isNull().or(Ingredient_.hidden.notEquals(1)))
+      .build()
+      .find()
+      .map(
         (e) => Portion(mass: 0)..ingredient.target = e,
       );
   final portions = recipes.toList()..addAll(ingredients);

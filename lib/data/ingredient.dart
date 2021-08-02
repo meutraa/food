@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:objectbox/objectbox.dart';
 
@@ -8,6 +7,8 @@ class Ingredient {
 
   final String name;
   final String? description;
+
+  int? hidden;
 
   double mass; // in g
   double energy; // in kcal
@@ -33,6 +34,7 @@ class Ingredient {
     required this.fibre,
     required this.protein,
     required this.salt,
+    this.hidden = 0,
     this.id = 0,
     this.description,
   });
@@ -49,6 +51,7 @@ class Ingredient {
     double aoac,
     this.protein, {
     this.salt = 0,
+    this.hidden = 0,
     this.id = 0,
   })  : mass = 100,
         fibre = aoac == -1 ? (nsp == -1 ? 0 : nsp) : aoac;
@@ -57,6 +60,7 @@ class Ingredient {
     required this.mass,
     required this.name,
     this.id = 0,
+    this.hidden = 0,
     this.energy = 0,
     this.fats = 0,
     this.saturated = 0,
@@ -68,35 +72,31 @@ class Ingredient {
     this.description,
   });
 
-  @override
-  String toString() => jsonEncode(<String, dynamic>{
-        'mass': mass,
-        'name': name,
-        'energy': energy,
-        'fats': fats,
-        'saturated': saturated,
-        'carbohydrates': carbohydrates,
-        'sugar': sugar,
-        'fibre': fibre,
-        'protein': protein,
-        'salt': salt,
-      });
+  Object toJson() => [
+        name,
+        mass,
+        energy,
+        fats,
+        saturated,
+        carbohydrates,
+        sugar,
+        fibre,
+        protein,
+        salt,
+      ];
 
-  static Ingredient fromJson(String val) {
-    final m = jsonDecode(val) as Map<String, dynamic>;
-    return Ingredient(
-      mass: m['mass'] as double,
-      name: m['name'] as String,
-      energy: m['energy'] as double,
-      fats: m['fats'] as double,
-      saturated: m['saturated'] as double,
-      carbohydrates: m['carbohydrates'] as double,
-      sugar: m['sugar'] as double,
-      fibre: m['fibre'] as double,
-      protein: m['protein'] as double,
-      salt: m['salt'] as double,
-    );
-  }
+  static Ingredient fromJson(List<dynamic> m) => Ingredient(
+        name: m[0] as String,
+        mass: m[1] as double,
+        energy: m[2] as double,
+        fats: m[3] as double,
+        saturated: m[4] as double,
+        carbohydrates: m[5] as double,
+        sugar: m[6] as double,
+        fibre: m[7] as double,
+        protein: m[8] as double,
+        salt: m[9] as double,
+      );
 
   Ingredient mash(double mass) {
     final ratio = mass / this.mass;

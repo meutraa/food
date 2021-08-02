@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "6:4101147900017153457",
-      "lastPropertyId": "15:2955767762301129367",
+      "lastPropertyId": "16:2093308163979442057",
       "name": "Ingredient",
       "properties": [
         {
@@ -68,6 +68,11 @@
           "id": "15:2955767762301129367",
           "name": "description",
           "type": 9
+        },
+        {
+          "id": "16:2093308163979442057",
+          "name": "hidden",
+          "type": 6
         }
       ],
       "relations": []

@@ -149,7 +149,11 @@ class _HomePageState extends State<HomePage> {
             DataList<Ingredient>(
               store: widget.store,
               orderField: Ingredient_.id,
-              condition: Ingredient_.description.isNull(),
+              condition: Ingredient_.description.isNull().and(
+                    Ingredient_.hidden.isNull().or(
+                          Ingredient_.hidden.notEquals(1),
+                        ),
+                  ),
               itemBuilder: (context, e) => IngredientItem(
                 key: ValueKey(e.id),
                 ingredient: e,

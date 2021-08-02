@@ -1,3 +1,4 @@
+
 import 'package:objectbox/objectbox.dart';
 
 import 'ingredient.dart';
@@ -22,6 +23,11 @@ class Portion {
     this.id = 0,
     this.time,
   });
+
+  Object toJson() => [
+        mass,
+        ingredient.target!.toJson(),
+      ];
 
   Ingredient mash() {
     final e = recipe.target!;

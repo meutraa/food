@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -208,7 +209,7 @@ class IngredientItem extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(24)),
                       ),
                       child: QrImage(
-                        data: ingredient.toString(),
+                        data: jsonEncode(ingredient.toJson()),
                         eyeStyle: const QrEyeStyle(
                           eyeShape: QrEyeShape.circle,
                           color: Colors.white,

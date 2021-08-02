@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'data/portion.dart';
 import 'data/recipe.dart';
@@ -117,6 +120,42 @@ class RecipeItem extends StatelessWidget {
                   ),
                   label: const Text(
                     'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    final data = jsonEncode(recipe.toJson());
+                    debugPrint(data);
+                    showDialog<void>(
+                      context: context,
+                      barrierColor: null,
+                      builder: (context) => Dialog(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                        ),
+                        child: QrImage(
+                          data: data,
+                          eyeStyle: const QrEyeStyle(
+                            eyeShape: QrEyeShape.circle,
+                            color: Colors.white,
+                          ),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleShape: QrDataModuleShape.square,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.share_rounded,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Share',
                     style: TextStyle(
                       color: Colors.white,
                     ),

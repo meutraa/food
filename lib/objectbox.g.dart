@@ -19,7 +19,7 @@ final _entities = <ModelEntity>[
   ModelEntity(
       id: const IdUid(6, 4101147900017153457),
       name: 'Ingredient',
-      lastPropertyId: const IdUid(15, 2955767762301129367),
+      lastPropertyId: const IdUid(16, 2093308163979442057),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
@@ -81,6 +81,11 @@ final _entities = <ModelEntity>[
             id: const IdUid(15, 2955767762301129367),
             name: 'description',
             type: 9,
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(16, 2093308163979442057),
+            name: 'hidden',
+            type: 6,
             flags: 0)
       ],
       relations: <ModelRelation>[],
@@ -251,7 +256,7 @@ ModelDefinition getObjectBoxModel() {
           final descriptionOffset = object.description == null
               ? null
               : fbb.writeString(object.description!);
-          fbb.startTable(16);
+          fbb.startTable(17);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, nameOffset);
           fbb.addFloat64(2, object.mass);
@@ -264,6 +269,7 @@ ModelDefinition getObjectBoxModel() {
           fbb.addFloat64(12, object.protein);
           fbb.addFloat64(13, object.salt);
           fbb.addOffset(14, descriptionOffset);
+          fbb.addInt64(15, object.hidden);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -292,6 +298,8 @@ ModelDefinition getObjectBoxModel() {
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 28, 0),
               salt:
                   const fb.Float64Reader().vTableGet(buffer, rootOffset, 30, 0),
+              hidden: const fb.Int64Reader()
+                  .vTableGetNullable(buffer, rootOffset, 34),
               id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
               description: const fb.StringReader()
                   .vTableGetNullable(buffer, rootOffset, 32));
@@ -422,6 +430,10 @@ class Ingredient_ {
   /// see [Ingredient.description]
   static final description =
       QueryStringProperty<Ingredient>(_entities[0].properties[11]);
+
+  /// see [Ingredient.hidden]
+  static final hidden =
+      QueryIntegerProperty<Ingredient>(_entities[0].properties[12]);
 }
 
 /// [Portion] entity fields to define ObjectBox queries.

@@ -1,14 +1,17 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'data/ingredient.dart';
 
+import 'data/ingredient.dart';
 import 'data/portion.dart';
+import 'data/recipe.dart';
 import 'date.dart';
 import 'item_stat.dart';
 import 'objectbox.g.dart';
@@ -25,11 +28,16 @@ class Stats {
   double consumedProtein;
   double consumedCarbs;
 
+  double totalEnergy;
+  int totalHours;
+
   Stats({
     this.consumedEnergy = 0,
     this.consumedFats = 0,
     this.consumedProtein = 0,
     this.consumedCarbs = 0,
+    this.totalEnergy = 0,
+    this.totalHours = 0,
   });
 }
 
@@ -72,6 +80,7 @@ class _StatisticsPageState extends State<StatisticsPage>
   double totalEnergyCarbs = 0;
   double totalGramsFat = 0;
   double totalGramsCarbs = 0;
+  double requiredEnergy = 0;
 
   List<StatData> stats = [];
 
@@ -87,6 +96,23 @@ class _StatisticsPageState extends State<StatisticsPage>
       stats.consumedFats += mash.fats;
       stats.consumedProtein += mash.protein;
     }
+
+    final all = widget.store
+        .box<Portion>()
+        .query(Portion_.time.notNull())
+        .build()
+        .find();
+    for (final p in all) {
+      final mash = p.on(
+        ingredient: (e) => e.mash(p.mass),
+        recipe: (e) => p.mash(),
+      );
+      stats.totalEnergy += mash.energy;
+    }
+    if (all.isNotEmpty) {
+      stats.totalHours = DateTime.now().difference(all[0].time!).inHours;
+    }
+
     return stats;
   }
 
@@ -105,7 +131,8 @@ class _StatisticsPageState extends State<StatisticsPage>
 
   void genStats() {
     final bodyWeight = Preferences.mass.val;
-    final totalEnergy = (bmr() * Preferences.calPerc.val) / 100;
+    requiredEnergy = bmr();
+    final totalEnergy = (requiredEnergy * Preferences.calPerc.val) / 100;
 
     totalGramsProtein = (bodyWeight * Preferences.protein.val) / 100;
     totalEnergyProtein = totalGramsProtein * 4;
@@ -163,14 +190,15 @@ class _StatisticsPageState extends State<StatisticsPage>
           }
           final d = snapshot.data!;
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 64),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 8),
+                    padding: const EdgeInsetsDirectional.only(start: 16),
                     child: IconButton(
                       onPressed: () async {
                         final data = await FlutterBarcodeScanner.scanBarcode(
@@ -182,8 +210,49 @@ class _StatisticsPageState extends State<StatisticsPage>
                         if (data.isEmpty) {
                           return;
                         }
-                        final ing = Ingredient.fromJson(data);
-                        widget.store.box<Ingredient>().put(ing);
+                        final json = jsonDecode(data) as List<dynamic>;
+                        if (json.length > 2 && json[2] is double) {
+                          // ingredient
+                          final ing = Ingredient.fromJson(json);
+                          widget.store.box<Ingredient>().put(ing);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.blueAccent,
+                            content: Text(
+                              'Added ${ing.name}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ));
+                        } else if (json.isNotEmpty && json[0] is String) {
+                          // recipe
+                          final recipe = Recipe.fromJson(json);
+                          debugPrint(recipe.name);
+                          widget.store.box<Recipe>().put(recipe);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.blueAccent,
+                            content: Text(
+                              'Added ${recipe.name}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ));
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text(
+                              'Invalid data',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ));
+                        }
                       },
                       icon: NeumorphicIcon(
                         Icons.qr_code_rounded,
@@ -194,8 +263,41 @@ class _StatisticsPageState extends State<StatisticsPage>
                       ),
                     ),
                   ),
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          weekdays[startTime.weekday],
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w200,
+                          ),
+                        ),
+                      ),
+                      const Center(
+                        child: Text(
+                          'the',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w200,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Center(
+                        child: Text(
+                          '${startTime.day}${daySuffix(startTime.day)} of '
+                          '${months[startTime.month]}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    padding: const EdgeInsetsDirectional.only(end: 16),
                     child: IconButton(
                       onPressed: () => Navigator.push<void>(
                         context,
@@ -214,123 +316,114 @@ class _StatisticsPageState extends State<StatisticsPage>
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
               Center(
-                child: Text(
-                  weekdays[startTime.weekday],
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-              ),
-              const Center(
-                child: Text(
-                  'the',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Center(
-                child: Text(
-                  '${startTime.day}${daySuffix(startTime.day)} of '
-                  '${months[startTime.month]}',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 280,
-                    width: 320,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: RadarChart(
-                        RadarChartData(
-                          getTitle: (i) {
-                            switch (i) {
-                              case 0:
-                                return 'Fats';
-                              case 1:
-                                return 'Carbs';
-                              default:
-                                return 'Protein';
-                            }
-                          },
-                          tickCount: 1,
-                          titlePositionPercentageOffset: 0.2,
-                          titleTextStyle: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 12,
-                          ),
-                          ticksTextStyle:
-                              const TextStyle(color: Colors.transparent),
-                          dataSets: [
-                            RadarDataSet(
-                              borderColor: Colors.white.withOpacity(0.8),
-                              borderWidth: 0.5,
-                              entryRadius: 0,
-                              fillColor: Colors.white.withOpacity(0.2),
-                              dataEntries: [
-                                RadarEntry(value: totalEnergyFat),
-                                RadarEntry(value: totalEnergyCarbs),
-                                RadarEntry(value: totalEnergyProtein),
-                              ],
-                            ),
-                            RadarDataSet(
-                              borderColor: () {
-                                final m = max(
-                                  max(
-                                    d.consumedCarbs,
-                                    d.consumedProtein,
-                                  ),
-                                  d.consumedFats,
-                                );
-                                if (m == d.consumedCarbs) {
-                                  return Colors.pinkAccent;
-                                }
-                                if (m == d.consumedFats) {
-                                  return Colors.yellowAccent;
-                                }
-                                if (m == d.consumedProtein) {
-                                  return Colors.orangeAccent;
-                                }
-                              }(),
-                              borderWidth: 0.5,
-                              entryRadius: 3,
-                              fillColor: Colors.white.withOpacity(0.5),
-                              dataEntries: [
-                                RadarEntry(value: d.consumedFats * 9),
-                                RadarEntry(value: d.consumedCarbs * 4),
-                                RadarEntry(value: d.consumedProtein * 4),
-                              ],
-                            ),
+                child: SizedBox(
+                  height: 220,
+                  width: 280,
+                  child: RadarChart(
+                    RadarChartData(
+                      getTitle: (i) {
+                        switch (i) {
+                          case 0:
+                            return 'Fats';
+                          case 1:
+                            return 'Carbs';
+                          default:
+                            return 'Protein';
+                        }
+                      },
+                      tickCount: 1,
+                      titlePositionPercentageOffset: 0.2,
+                      titleTextStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 12,
+                      ),
+                      ticksTextStyle:
+                          const TextStyle(color: Colors.transparent),
+                      dataSets: [
+                        RadarDataSet(
+                          borderColor: Colors.white.withOpacity(0.8),
+                          borderWidth: 0.5,
+                          entryRadius: 0,
+                          fillColor: Colors.white.withOpacity(0.2),
+                          dataEntries: [
+                            RadarEntry(value: totalEnergyFat),
+                            RadarEntry(value: totalEnergyCarbs),
+                            RadarEntry(value: totalEnergyProtein),
                           ],
-                          tickBorderData: BorderSide(
-                            color: Colors.white.withOpacity(0.25),
-                            width: 0.5,
-                          ),
-                          borderData: FlBorderData(show: false),
-                          gridBorderData: BorderSide(
-                            color: Colors.white.withOpacity(0.5),
-                          ),
-                          radarBorderData: const BorderSide(
-                            color: Colors.transparent,
-                          ),
                         ),
+                        RadarDataSet(
+                          borderColor: () {
+                            final m = max(
+                              max(
+                                d.consumedCarbs,
+                                d.consumedProtein,
+                              ),
+                              d.consumedFats,
+                            );
+                            if (m == d.consumedCarbs) {
+                              return Colors.pinkAccent;
+                            }
+                            if (m == d.consumedFats) {
+                              return Colors.yellowAccent;
+                            }
+                            if (m == d.consumedProtein) {
+                              return Colors.orangeAccent;
+                            }
+                          }(),
+                          borderWidth: 0.5,
+                          entryRadius: 3,
+                          fillColor: Colors.white.withOpacity(0.5),
+                          dataEntries: [
+                            RadarEntry(value: d.consumedFats * 9),
+                            RadarEntry(value: d.consumedCarbs * 4),
+                            RadarEntry(value: d.consumedProtein * 4),
+                          ],
+                        ),
+                      ],
+                      tickBorderData: BorderSide(
+                        color: Colors.white.withOpacity(0.25),
+                        width: 0.5,
+                      ),
+                      borderData: FlBorderData(show: false),
+                      gridBorderData: BorderSide(
+                        color: Colors.white.withOpacity(0.5),
+                      ),
+                      radarBorderData: const BorderSide(
+                        color: Colors.transparent,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total: ${((((requiredEnergy / 24) * d.totalHours) - d.totalEnergy) / -7716).toStringAsFixed(2)} kg',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      'Today: ${((requiredEnergy - d.consumedEnergy) / -7716).toStringAsFixed(2)} kg',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               ...stats
                   .map(
                     (s) => [
