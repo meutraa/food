@@ -67,13 +67,16 @@ class _PortionItemState extends State<PortionItem> {
                       color: Colors.white,
                     ),
                   ),
-                  Text(
-                    intake.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      overflow: TextOverflow.fade,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300,
+                  Flexible(
+                    child: Text(
+                      intake.name,
+                      maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
                   ),
                 ],

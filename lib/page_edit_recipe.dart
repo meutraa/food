@@ -130,9 +130,9 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   onPressed: () async {
                     final valid = _formKey.currentState?.validate();
                     if (valid ?? false) {
-                      await saveValue();
                       FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.of(context).pop();
+                      await saveValue();
                     }
                   },
                   icon: const Icon(

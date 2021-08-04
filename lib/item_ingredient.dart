@@ -52,7 +52,7 @@ class IngredientItem extends StatelessWidget {
                 ingredient.name,
                 maxLines: 2,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   overflow: TextOverflow.ellipsis,
                   color: Colors.white,
                   fontWeight: FontWeight.w300,

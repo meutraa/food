@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -56,6 +57,7 @@ class StatData {
 class _StatisticsPageState extends State<StatisticsPage>
     with AutomaticKeepAliveClientMixin {
   late DateTime startTime;
+  late DateTime delay;
   late DateTime endTime;
 
   double totalGramsProtein = 0;
@@ -98,10 +100,7 @@ class _StatisticsPageState extends State<StatisticsPage>
       stats.averageEnergy *= 1440 / stats.totalMinutes;
       stats.averageCarbs *= 1440 / stats.totalMinutes;
       stats.averageFats *= 1440 / stats.totalMinutes;
-      debugPrint('totalprotein = ${stats.averageEnergy}');
-      debugPrint('days = ${stats.totalMinutes / 1440}');
       stats.averageProtein *= 1440 / stats.totalMinutes;
-      debugPrint('averageprotein = ${stats.averageEnergy}');
     }
 
     return stats;
@@ -115,6 +114,7 @@ class _StatisticsPageState extends State<StatisticsPage>
   }
 
   void setTimeLimits(DateTime time) => setState(() {
+        delay = DateTime.now().add(const Duration(milliseconds: 200));
         startTime = DateTime(
           time.year,
           time.month,
@@ -124,24 +124,24 @@ class _StatisticsPageState extends State<StatisticsPage>
         endTime = startTime.add(const Duration(days: 1));
       });
 
-  Color getMacroColor(Stats d) {
+  Color getMacroColor(double c, double f, double p) {
+    debugPrint('$c, $f, $p');
+    final ce = c * 4;
+    final fe = f * 9;
+    final pe = p * 4;
     final m = max(
-      max(
-        d.consumedCarbs,
-        d.consumedProtein,
-      ),
-      d.consumedFats,
-    );
-    if (m == d.consumedCarbs) {
+        max(
+          ce,
+          pe,
+        ),
+        fe);
+    if (m == ce) {
       return Colors.pinkAccent;
-    }
-    if (m == d.consumedFats) {
+    } else if (m == fe) {
       return Colors.yellowAccent;
-    }
-    if (m == d.consumedProtein) {
+    } else {
       return Colors.orangeAccent;
     }
-    return Colors.white;
   }
 
   void genStats() {
@@ -208,299 +208,365 @@ class _StatisticsPageState extends State<StatisticsPage>
             return const Center(child: CircularProgressIndicator());
           }
           final d = snapshot.data!;
-          debugPrint(d.averageProtein.toString());
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 64),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16),
-                    child: IconButton(
-                      onPressed: () async {
-                        final data = await FlutterBarcodeScanner.scanBarcode(
-                          '#ffffff',
-                          'Cancel',
-                          true,
-                          ScanMode.QR,
-                        );
-                        if (data.isEmpty) {
-                          return;
-                        }
-                        final json = jsonDecode(data) as List<dynamic>;
-                        if (json.length > 2 && json[2] is double) {
-                          // ingredient
-                          final ing = Ingredient.fromJson(json);
-                          widget.store.box<Ingredient>().put(ing);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Colors.blueAccent,
-                            content: Text(
-                              'Added ${ing.name}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
+          return Listener(
+            onPointerMove: (ev) {
+              if (DateTime.now().isBefore(delay)) {
+                return;
+              }
+              final mag = ev.delta.dx;
+              final sen = 0.5;
+              // final dir = ev.delta.direction;
+              debugPrint('$mag');
+              if (mag < sen && mag > -sen) {
+                return;
+              }
+              if (mag > 0 && endTime.isBefore(DateTime.now())) {
+                setTimeLimits(startTime.add(const Duration(days: 1)));
+              } else if (mag < 0 &&
+                  items.isNotEmpty &&
+                  startTime.isAfter(items.last.time!)) {
+                setTimeLimits(startTime.subtract(const Duration(days: 1)));
+              }
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 64),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 16),
+                      child: IconButton(
+                        onPressed: () async {
+                          final data = await FlutterBarcodeScanner.scanBarcode(
+                            '#ffffff',
+                            'Cancel',
+                            true,
+                            ScanMode.QR,
+                          );
+                          if (data.isEmpty) {
+                            return;
+                          }
+                          final json = jsonDecode(data) as List<dynamic>;
+                          if (json.length > 2 && json[2] is double) {
+                            // ingredient
+                            final ing = Ingredient.fromJson(json);
+                            widget.store.box<Ingredient>().put(ing);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.blueAccent,
+                                content: Text(
+                                  'Added ${ing.name}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ));
-                        } else if (json.isNotEmpty && json[0] is String) {
-                          // recipe
-                          final recipe = Recipe.fromJson(json);
-                          debugPrint(recipe.name);
-                          widget.store.box<Recipe>().put(recipe);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Colors.blueAccent,
-                            content: Text(
-                              'Added ${recipe.name}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
+                            );
+                          } else if (json.isNotEmpty && json[0] is String) {
+                            // recipe
+                            final recipe = Recipe.fromJson(json);
+                            widget.store.box<Recipe>().put(recipe);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.blueAccent,
+                                content: Text(
+                                  'Added ${recipe.name}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ));
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'Invalid data',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Invalid data',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ));
-                        }
-                      },
-                      icon: NeumorphicIcon(
-                        Icons.qr_code_rounded,
-                        size: 32,
-                        style: const NeumorphicStyle(
-                          color: Colors.white,
+                            );
+                          }
+                        },
+                        icon: NeumorphicIcon(
+                          Icons.qr_code_rounded,
+                          size: 32,
+                          style: const NeumorphicStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        firstDate: items.last.time!,
-                        lastDate: DateTime.now(),
-                        initialDate: startTime,
-                        builder: (context, child) => Theme(
-                          data: ThemeData.dark().copyWith(
-                            colorScheme: const ColorScheme.dark(
-                              primary: Colors.blueAccent,
-                              surface: Colors.blueAccent,
+                    InkWell(
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          firstDate: items.last.time!,
+                          lastDate: DateTime.now(),
+                          initialDate: startTime,
+                          builder: (context, child) => Theme(
+                            data: ThemeData.dark().copyWith(
+                              colorScheme: const ColorScheme.dark(
+                                primary: Colors.blueAccent,
+                                surface: Colors.blueAccent,
+                              ),
+                              buttonTheme: const ButtonThemeData(
+                                textTheme: ButtonTextTheme.primary,
+                              ),
                             ),
-                            buttonTheme: const ButtonThemeData(
-                              textTheme: ButtonTextTheme.primary,
+                            child: child!,
+                          ),
+                        );
+                        if (date != null) {
+                          setTimeLimits(date.add(const Duration(hours: 6)));
+                        }
+                      },
+                      child: Column(
+                        children: [
+                          Center(
+                            child: Text(
+                              weekdays[startTime.weekday],
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.w200,
+                              ),
                             ),
                           ),
-                          child: child!,
+                          const Center(
+                            child: Text(
+                              'the',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w200,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Center(
+                            child: Text(
+                              '${startTime.day}${daySuffix(startTime.day)} of '
+                              '${months[startTime.month]}',
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 16),
+                      child: IconButton(
+                        onPressed: () => Navigator.push<void>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PreferencePage(),
+                          ),
+                        ).then((value) => setState(genStats)),
+                        icon: NeumorphicIcon(
+                          Icons.settings_rounded,
+                          size: 32,
+                          style: const NeumorphicStyle(
+                            color: Colors.white,
+                          ),
                         ),
-                      );
-                      if (date != null) {
-                        setTimeLimits(date.add(const Duration(hours: 6)));
-                      }
-                    },
-                    child: Column(
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: SizedBox(
+                    height: 220,
+                    width: 280,
+                    child: Stack(
                       children: [
-                        Center(
+                        const Align(
+                          alignment: Alignment.topCenter,
                           child: Text(
-                            weekdays[startTime.weekday],
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w200,
-                            ),
-                          ),
-                        ),
-                        const Center(
-                          child: Text(
-                            'the',
+                            'Fats',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w200,
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Center(
+                        const Positioned(
+                          right: 32,
+                          bottom: 40,
                           child: Text(
-                            '${startTime.day}${daySuffix(startTime.day)} of '
-                            '${months[startTime.month]}',
-                            style: const TextStyle(
-                              fontSize: 24,
+                            'Carbs',
+                            style: TextStyle(
                               fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        const Positioned(
+                          left: 32,
+                          bottom: 40,
+                          child: Text(
+                            'Protein',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        RadarChart(
+                          RadarChartData(
+                            tickCount: 1,
+                            ticksTextStyle:
+                                const TextStyle(color: Colors.transparent),
+                            dataSets: [
+                              RadarDataSet(
+                                borderColor: getMacroColor(
+                                  d.averageCarbs,
+                                  d.averageFats,
+                                  d.averageProtein,
+                                ),
+                                borderWidth: 0.5,
+                                entryRadius: 0,
+                                fillColor: getMacroColor(
+                                  d.averageCarbs,
+                                  d.averageFats,
+                                  d.averageProtein,
+                                ).withOpacity(0.3),
+                                dataEntries: [
+                                  RadarEntry(value: d.averageFats * 9),
+                                  RadarEntry(value: d.averageCarbs * 4),
+                                  RadarEntry(value: d.averageProtein * 4),
+                                ],
+                              ),
+                              RadarDataSet(
+                                borderColor: Colors.white.withOpacity(0.8),
+                                borderWidth: 1,
+                                entryRadius: 0,
+                                fillColor: Colors.white.withOpacity(0.2),
+                                dataEntries: [
+                                  RadarEntry(value: totalEnergyFat),
+                                  RadarEntry(value: totalEnergyCarbs),
+                                  RadarEntry(value: totalEnergyProtein),
+                                ],
+                              ),
+                              RadarDataSet(
+                                borderColor: getMacroColor(
+                                  d.consumedCarbs,
+                                  d.consumedFats,
+                                  d.consumedProtein,
+                                ),
+                                borderWidth: 1,
+                                entryRadius: 3,
+                                fillColor: getMacroColor(
+                                  d.consumedCarbs,
+                                  d.consumedFats,
+                                  d.consumedProtein,
+                                ).withOpacity(0.5),
+                                dataEntries: [
+                                  RadarEntry(value: d.consumedFats * 9),
+                                  RadarEntry(value: d.consumedCarbs * 4),
+                                  RadarEntry(value: d.consumedProtein * 4),
+                                ],
+                              ),
+                            ],
+                            tickBorderData: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderData: FlBorderData(show: false),
+                            gridBorderData: const BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            radarBorderData: const BorderSide(
+                              color: Colors.transparent,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 16),
-                    child: IconButton(
-                      onPressed: () => Navigator.push<void>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PreferencePage(),
-                        ),
-                      ).then((value) => setState(genStats)),
-                      icon: NeumorphicIcon(
-                        Icons.settings_rounded,
-                        size: 32,
-                        style: const NeumorphicStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: SizedBox(
-                  height: 220,
-                  width: 280,
-                  child: Stack(
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Align(
-                        alignment: Alignment.topCenter,
-                        child: Text('Fats'),
+                      Text(
+                        'Total: ${((((requiredEnergy * d.totalMinutes) / 1440) - d.totalEnergy) / -7716).toStringAsFixed(2)} kg',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 14,
+                        ),
                       ),
-                      const Positioned(
-                        right: 32,
-                        bottom: 40,
-                        child: Text('Carbs'),
-                      ),
-                      const Positioned(
-                        left: 32,
-                        bottom: 40,
-                        child: Text('Protein'),
-                      ),
-                      RadarChart(
-                        RadarChartData(
-                          tickCount: 1,
-                          ticksTextStyle:
-                              const TextStyle(color: Colors.transparent),
-                          dataSets: [
-                            RadarDataSet(
-                              borderColor: Colors.white.withOpacity(0.8),
-                              borderWidth: 0.2,
-                              entryRadius: 0,
-                              fillColor: Colors.white.withOpacity(0.2),
-                              dataEntries: [
-                                RadarEntry(value: totalEnergyFat),
-                                RadarEntry(value: totalEnergyCarbs),
-                                RadarEntry(value: totalEnergyProtein),
-                              ],
-                            ),
-                            RadarDataSet(
-                              borderColor: getMacroColor(d),
-                              borderWidth: 1,
-                              entryRadius: 3,
-                              fillColor: getMacroColor(d).withOpacity(0.5),
-                              dataEntries: [
-                                RadarEntry(value: d.consumedFats * 9),
-                                RadarEntry(value: d.consumedCarbs * 4),
-                                RadarEntry(value: d.consumedProtein * 4),
-                              ],
-                            ),
-                          ],
-                          tickBorderData: const BorderSide(
-                            color: Colors.transparent,
-                          ),
-                          borderData: FlBorderData(show: false),
-                          gridBorderData: const BorderSide(
-                            color: Colors.transparent,
-                          ),
-                          radarBorderData: const BorderSide(
-                            color: Colors.transparent,
-                          ),
+                      Text(
+                        'Today: ${((requiredEnergy - d.consumedEnergy) / -7716).toStringAsFixed(2)} kg',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 14,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 48),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total: ${((((requiredEnergy * d.totalMinutes) / 1440) - d.totalEnergy) / -7716).toStringAsFixed(2)} kg',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      'Today: ${((requiredEnergy - d.consumedEnergy) / -7716).toStringAsFixed(2)} kg',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              ...stats
-                  .map(
-                    (s) => [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 8,
-                        ),
-                        child: Table(
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          columnWidths: const {
-                            0: FlexColumnWidth(2),
-                            1: FlexColumnWidth(),
-                            2: FlexColumnWidth(),
-                          },
-                          children: [
-                            TableRow(children: [
-                              Text(
-                                s.label,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
+                const SizedBox(height: 16),
+                ...stats
+                    .map(
+                      (s) => [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 8,
+                          ),
+                          child: Table(
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            columnWidths: const {
+                              0: FlexColumnWidth(2),
+                              1: FlexColumnWidth(),
+                              2: FlexColumnWidth(),
+                            },
+                            children: [
+                              TableRow(children: [
+                                Text(
+                                  s.label,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '${(s.value(d) * 100 / s.target).toStringAsFixed(0)}%',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                              Text(
-                                s.format(s.target),
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(fontSize: 11),
-                              )
-                            ])
-                          ],
+                                Text(
+                                  '${(s.value(d) * 100 / s.target).toStringAsFixed(0)}%',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                                Text(
+                                  s.format(s.target),
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(fontSize: 11),
+                                )
+                              ])
+                            ],
+                          ),
                         ),
-                      ),
-                      StatItem(
-                        value: s.value(d),
-                        target: s.target,
-                        average: s.average(d),
-                        format: s.format,
-                        color: s.color,
-                      ),
-                    ],
-                  )
-                  .expand((e) => e)
-                  .toList(growable: false)
-            ],
+                        StatItem(
+                          value: s.value(d),
+                          target: s.target,
+                          average: s.average(d),
+                          format: s.format,
+                          color: s.color,
+                        ),
+                      ],
+                    )
+                    .expand((e) => e)
+                    .toList(growable: false)
+              ],
+            ),
           );
         },
       ),

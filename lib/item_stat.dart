@@ -43,7 +43,7 @@ class StatItem extends StatelessWidget {
                 percent: min(1, (average > target ? target : average) / target),
                 height: 4,
                 style: ProgressStyle(
-                  depth: 2,
+                  depth: 1,
                   border: lightBorder,
                   variant: color.withOpacity(0),
                   accent: color,
@@ -53,14 +53,19 @@ class StatItem extends StatelessWidget {
             if (average > target)
               Padding(
                 padding: const EdgeInsets.only(top: 27, left: 16, right: 16),
-                child: NeumorphicProgress(
-                  percent: min(1, (average - target) / target),
-                  height: 4,
-                  style: ProgressStyle(
-                    depth: 2,
-                    border: lightBorder,
-                    variant: color,
-                    accent: color,
+                child: Transform(
+                  transform: Matrix4.rotationY(pi),
+                  alignment: Alignment.center,
+                  child: NeumorphicProgress(
+                    percent: min(1, (average - target) / target),
+                    height: 4,
+                    style: ProgressStyle(
+                      lightSource: LightSource.bottomRight,
+                      depth: 1,
+                      border: lightBorder,
+                      variant: color,
+                      accent: color,
+                    ),
                   ),
                 ),
               ),

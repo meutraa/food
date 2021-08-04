@@ -29,7 +29,7 @@ class RecipeItem extends StatelessWidget {
             Text(
               recipe.name,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 color: Colors.white,
                 fontWeight: FontWeight.w300,
               ),
@@ -51,13 +51,15 @@ class RecipeItem extends StatelessWidget {
             child: Table(
               children: recipe.portions
                   .map(
-                    (e) => TableRow(children: [
-                      Text((e.ingredient.hasValue
-                              ? e.ingredient.target?.name
-                              : e.recipe.target?.name) ??
-                          ''),
-                      Text('${nf(e.mass)} g')
-                    ]),
+                    (e) => TableRow(
+                      children: [
+                        Text((e.ingredient.hasValue
+                                ? e.ingredient.target?.name
+                                : e.recipe.target?.name) ??
+                            ''),
+                        Text('${nf(e.mass)} g')
+                      ],
+                    ),
                   )
                   .toList(growable: false),
             ),
@@ -128,7 +130,6 @@ class RecipeItem extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () {
                     final data = jsonEncode(recipe.toJson());
-                    debugPrint(data);
                     showDialog<void>(
                       context: context,
                       barrierColor: null,

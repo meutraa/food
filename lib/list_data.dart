@@ -91,7 +91,7 @@ class _DataListState<T> extends State<DataList<T>>
                   ]).createShader(bounds),
               blendMode: BlendMode.dstIn,
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 96),
+                padding: const EdgeInsets.only(bottom: 96, top: 52),
                 reverse: true,
                 itemBuilder: (context, i) =>
                     widget.itemBuilder(context, data[i]),

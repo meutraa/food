@@ -1,4 +1,3 @@
-
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
@@ -85,18 +84,19 @@ class Ingredient {
         salt,
       ];
 
-  static Ingredient fromJson(List<dynamic> m) => Ingredient(
-        name: m[0] as String,
-        mass: m[1] as double,
-        energy: m[2] as double,
-        fats: m[3] as double,
-        saturated: m[4] as double,
-        carbohydrates: m[5] as double,
-        sugar: m[6] as double,
-        fibre: m[7] as double,
-        protein: m[8] as double,
-        salt: m[9] as double,
-      );
+  Ingredient.fromJson(List<dynamic> m)
+      : id = 0,
+        description = null,
+        name = m[0] as String,
+        mass = m[1] as double,
+        energy = m[2] as double,
+        fats = m[3] as double,
+        saturated = m[4] as double,
+        carbohydrates = m[5] as double,
+        sugar = m[6] as double,
+        fibre = m[7] as double,
+        protein = m[8] as double,
+        salt = m[9] as double;
 
   Ingredient mash(double mass) {
     final ratio = mass / this.mass;

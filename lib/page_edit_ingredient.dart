@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 import 'data/ingredient.dart';
 import 'modal_confirm.dart';
@@ -132,9 +133,9 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                   onPressed: () async {
                     final valid = _formKey.currentState?.validate();
                     if (valid ?? false) {
-                      await saveValue();
                       FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.of(context).pop();
+                      await saveValue();
                     }
                   },
                   icon: const Icon(
