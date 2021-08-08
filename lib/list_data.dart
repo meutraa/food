@@ -73,22 +73,23 @@ class _DataListState<T> extends State<DataList<T>>
           children: [
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.lightBlue,
-                    Colors.lightBlue,
-                    Colors.transparent,
-                    Colors.transparent,
-                  ],
-                  stops: [
-                    0.0,
-                    0.1,
-                    0.85,
-                    0.91,
-                    1.0,
-                  ]).createShader(bounds),
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.lightBlue,
+                  Colors.lightBlue,
+                  Colors.transparent,
+                  Colors.transparent,
+                ],
+                stops: [
+                  0.0,
+                  0.1,
+                  0.85,
+                  0.91,
+                  1.0,
+                ],
+              ).createShader(bounds),
               blendMode: BlendMode.dstIn,
               child: ListView.builder(
                 padding: const EdgeInsets.only(bottom: 96, top: 52),

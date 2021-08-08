@@ -1,9 +1,9 @@
-import 'dart:math';
+import 'dart:ui';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:food/graph.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -101,79 +101,10 @@ class _PortionItemState extends State<PortionItem> {
                 width: 128,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: RadarChart(
-                    RadarChartData(
-                      getTitle: (i) {
-                        switch (i) {
-                          case 0:
-                            return 'Fats';
-                          case 1:
-                            return 'Carbs';
-                          case 2:
-                            return 'Protein';
-                          default:
-                            return 'Energy';
-                        }
-                      },
-                      tickCount: 5,
-                      titlePositionPercentageOffset: 0.35,
-                      titleTextStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.75),
-                        fontSize: 10,
-                      ),
-                      ticksTextStyle:
-                          const TextStyle(color: Colors.transparent),
-                      dataSets: [
-                        RadarDataSet(
-                          borderColor: () {
-                            final m = max(
-                              max(
-                                intake.carbohydrates,
-                                intake.protein,
-                              ),
-                              intake.fats,
-                            );
-                            if (m == intake.carbohydrates) {
-                              return Colors.pinkAccent;
-                            }
-                            if (m == intake.fats) {
-                              return Colors.yellowAccent;
-                            }
-                            if (m == intake.protein) {
-                              return Colors.orangeAccent;
-                            }
-                          }(),
-                          borderWidth: 0.5,
-                          entryRadius: 3,
-                          fillColor: Colors.white.withOpacity(0.5),
-                          dataEntries: [
-                            RadarEntry(
-                              value: intake.fats / intake.mass * 100,
-                            ),
-                            RadarEntry(
-                              value: intake.carbohydrates / intake.mass * 100,
-                            ),
-                            RadarEntry(
-                              value: intake.protein / intake.mass * 100,
-                            ),
-                            RadarEntry(
-                              value: intake.energy / intake.mass * 6,
-                            ),
-                          ],
-                        ),
-                      ],
-                      tickBorderData: BorderSide(
-                        color: Colors.white.withOpacity(0.25),
-                        width: 0.5,
-                      ),
-                      borderData: FlBorderData(show: false),
-                      gridBorderData: BorderSide(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      radarBorderData: const BorderSide(
-                        color: Colors.transparent,
-                      ),
-                    ),
+                  child: ColoredStats(
+                    carbs: intake.carbohydrates,
+                    proteins: intake.protein,
+                    fats: intake.fats,
                   ),
                 ),
               ),

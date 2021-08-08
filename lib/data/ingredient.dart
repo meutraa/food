@@ -99,7 +99,7 @@ class Ingredient {
         salt = m[9] as double;
 
   Ingredient mash(double mass) {
-    final ratio = mass / this.mass;
+    final ratio = mass / (this.mass == 0 ? 0.00001 : this.mass);
 
     return Ingredient(
       id: id,

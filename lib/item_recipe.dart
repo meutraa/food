@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
+import 'graph.dart';
 import 'item_ingredient.dart';
 import 'modal_confirm.dart';
 import 'objectbox.g.dart';
@@ -14,12 +16,14 @@ import 'page_edit_recipe.dart';
 class RecipeItem extends StatelessWidget {
   final Recipe recipe;
   final Store store;
+  late final Ingredient mash;
 
-  const RecipeItem({
+  RecipeItem({
     required this.recipe,
     required this.store,
     Key? key,
-  }) : super(key: key);
+  })  : mash = recipe.mash(),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
@@ -44,25 +48,43 @@ class RecipeItem extends StatelessWidget {
           ],
         ),
         children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(
-              start: 32,
-            ),
-            child: Table(
-              children: recipe.portions
-                  .map(
-                    (e) => TableRow(
-                      children: [
-                        Text((e.ingredient.hasValue
-                                ? e.ingredient.target?.name
-                                : e.recipe.target?.name) ??
-                            ''),
-                        Text('${nf(e.mass)} g')
-                      ],
-                    ),
-                  )
-                  .toList(growable: false),
-            ),
+          Row(
+            children: [
+              SizedBox(
+                height: 128,
+                width: 128,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ColoredStats(
+                    carbs: mash.carbohydrates,
+                    proteins: mash.protein,
+                    fats: mash.fats,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 32,
+                  ),
+                  child: Table(
+                    children: recipe.portions
+                        .map(
+                          (e) => TableRow(
+                            children: [
+                              Text((e.ingredient.hasValue
+                                      ? e.ingredient.target?.name
+                                      : e.recipe.target?.name) ??
+                                  ''),
+                              Text('${nf(e.mass)} g')
+                            ],
+                          ),
+                        )
+                        .toList(growable: false),
+                  ),
+                ),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -217,7 +239,7 @@ class RecipeItem extends StatelessWidget {
                 ),
               ],
             ),
-          )
+          ),
         ],
       );
 }

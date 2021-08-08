@@ -1,4 +1,3 @@
-
 import 'package:objectbox/objectbox.dart';
 
 import 'ingredient.dart';
@@ -37,7 +36,7 @@ class Portion {
     for (final p in e.portions) {
       // Does not support embedded recipes yet
       final i = p.ingredient.target!;
-      final ratio = p.mass / i.mass;
+      final ratio = p.mass / (i.mass == 0 ? 0.000001 : i.mass);
 
       mash.carbohydrates += i.carbohydrates * ratio;
       mash.sugar += i.sugar * ratio;
@@ -49,7 +48,7 @@ class Portion {
       mash.salt += i.salt * ratio;
     }
 
-    final ratio = mass / e.mass;
+    final ratio = mass / (e.mass == 0 ? 0.000001 : e.mass);
 
     mash.carbohydrates *= ratio;
     mash.sugar *= ratio;

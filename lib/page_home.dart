@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 32),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -9,6 +8,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:food/graph.dart';
+import 'package:food/stats_painter.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -54,6 +55,8 @@ class StatData {
   });
 }
 
+const mul = 1.3;
+
 class _StatisticsPageState extends State<StatisticsPage>
     with AutomaticKeepAliveClientMixin {
   late DateTime startTime;
@@ -97,6 +100,8 @@ class _StatisticsPageState extends State<StatisticsPage>
     if (portions.isNotEmpty) {
       stats.totalMinutes =
           DateTime.now().difference(portions.last.time!).inMinutes;
+      final up = 1440 - (stats.totalMinutes % 1440);
+      stats.totalMinutes += up;
       stats.averageEnergy *= 1440 / stats.totalMinutes;
       stats.averageCarbs *= 1440 / stats.totalMinutes;
       stats.averageFats *= 1440 / stats.totalMinutes;
@@ -125,7 +130,6 @@ class _StatisticsPageState extends State<StatisticsPage>
       });
 
   Color getMacroColor(double c, double f, double p) {
-    debugPrint('$c, $f, $p');
     final ce = c * 4;
     final fe = f * 9;
     final pe = p * 4;
@@ -214,9 +218,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                 return;
               }
               final mag = ev.delta.dx;
-              final sen = 0.5;
-              // final dir = ev.delta.direction;
-              debugPrint('$mag');
+              const sen = 0.5;
               if (mag < sen && mag > -sen) {
                 return;
               }
@@ -391,101 +393,85 @@ class _StatisticsPageState extends State<StatisticsPage>
                     width: 280,
                     child: Stack(
                       children: [
-                        const Align(
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                            'Fats',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                        const Positioned(
-                          right: 32,
-                          bottom: 40,
-                          child: Text(
-                            'Carbs',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                        const Positioned(
-                          left: 32,
-                          bottom: 40,
-                          child: Text(
-                            'Protein',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                        RadarChart(
-                          RadarChartData(
-                            tickCount: 1,
-                            ticksTextStyle:
-                                const TextStyle(color: Colors.transparent),
-                            dataSets: [
-                              RadarDataSet(
-                                borderColor: getMacroColor(
-                                  d.averageCarbs,
-                                  d.averageFats,
-                                  d.averageProtein,
+                        Center(
+                          child: Stack(
+                            children: [
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: CustomPaint(
+                                  painter: CurvePainter(
+                                    maxi: 100,
+                                    fillColor: getMacroColor(
+                                      d.averageCarbs,
+                                      d.averageFats,
+                                      d.averageProtein,
+                                    ).withOpacity(0.15),
+                                    drawDots: false,
+                                    fats: mul * d.averageFats * 0.8,
+                                    carbs: mul * d.averageCarbs * 0.4,
+                                    proteins: mul * d.averageProtein * 0.4,
+                                  ),
                                 ),
-                                borderWidth: 0.5,
-                                entryRadius: 0,
-                                fillColor: getMacroColor(
-                                  d.averageCarbs,
-                                  d.averageFats,
-                                  d.averageProtein,
-                                ).withOpacity(0.3),
-                                dataEntries: [
-                                  RadarEntry(value: d.averageFats * 9),
-                                  RadarEntry(value: d.averageCarbs * 4),
-                                  RadarEntry(value: d.averageProtein * 4),
-                                ],
                               ),
-                              RadarDataSet(
-                                borderColor: Colors.white.withOpacity(0.8),
-                                borderWidth: 1,
-                                entryRadius: 0,
-                                fillColor: Colors.white.withOpacity(0.2),
-                                dataEntries: [
-                                  RadarEntry(value: totalEnergyFat),
-                                  RadarEntry(value: totalEnergyCarbs),
-                                  RadarEntry(value: totalEnergyProtein),
-                                ],
-                              ),
-                              RadarDataSet(
-                                borderColor: getMacroColor(
-                                  d.consumedCarbs,
-                                  d.consumedFats,
-                                  d.consumedProtein,
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: CustomPaint(
+                                  painter: CurvePainter(
+                                    maxi: 100,
+                                    width: 0.5,
+                                    drawDots: false,
+                                    fats: mul * d.averageFats * 0.8,
+                                    carbs: mul * d.averageCarbs * 0.4,
+                                    proteins: mul * d.averageProtein * 0.4,
+                                  ),
                                 ),
-                                borderWidth: 1,
-                                entryRadius: 3,
-                                fillColor: getMacroColor(
-                                  d.consumedCarbs,
-                                  d.consumedFats,
-                                  d.consumedProtein,
-                                ).withOpacity(0.5),
-                                dataEntries: [
-                                  RadarEntry(value: d.consumedFats * 9),
-                                  RadarEntry(value: d.consumedCarbs * 4),
-                                  RadarEntry(value: d.consumedProtein * 4),
-                                ],
+                              ),
+                              // Actual
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: CustomPaint(
+                                  painter: CurvePainter(
+                                    maxi: 100,
+                                    fillColor: getMacroColor(
+                                      d.consumedCarbs,
+                                      d.consumedFats,
+                                      d.consumedProtein,
+                                    ).withOpacity(0.4),
+                                    drawDots: false,
+                                    fats: mul * d.consumedFats * 0.8,
+                                    carbs: mul * d.consumedCarbs * 0.4,
+                                    proteins: mul * d.consumedProtein * 0.4,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: ColoredStats(
+                                  maxi: 100,
+                                  fats: mul * d.consumedFats * 0.8,
+                                  carbs: mul * d.consumedCarbs * 0.4,
+                                  proteins: mul * d.consumedProtein * 0.4,
+                                ),
+                              ),
+                              // Target
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: CustomPaint(
+                                  painter: CurvePainter(
+                                    maxi: 100,
+                                    drawDots: false,
+                                    fats: mul * totalGramsFat * 0.8,
+                                    carbs: mul * totalGramsCarbs * 0.4,
+                                    proteins: mul * totalGramsProtein * 0.4,
+                                  ),
+                                ),
                               ),
                             ],
-                            tickBorderData: const BorderSide(
-                              color: Colors.transparent,
-                            ),
-                            borderData: FlBorderData(show: false),
-                            gridBorderData: const BorderSide(
-                              color: Colors.transparent,
-                            ),
-                            radarBorderData: const BorderSide(
-                              color: Colors.transparent,
-                            ),
                           ),
                         ),
                       ],

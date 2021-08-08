@@ -17,6 +17,27 @@ class Recipe {
     this.id = 0,
   });
 
+  Ingredient mash() {
+    final mash = Ingredient.mash(name: name, mass: mass);
+
+    // Calculate combined stats if recipe
+    for (final p in portions) {
+      final i = p.ingredient.target!;
+      final ratio = p.mass / (i.mass == 0 ? 0.000001 : i.mass);
+
+      mash.carbohydrates += i.carbohydrates * ratio;
+      mash.sugar += i.sugar * ratio;
+      mash.fibre += i.fibre * ratio;
+      mash.energy += i.energy * ratio;
+      mash.fats += i.fats * ratio;
+      mash.saturated += i.saturated * ratio;
+      mash.protein += i.protein * ratio;
+      mash.salt += i.salt * ratio;
+    }
+
+    return mash;
+  }
+
   Object toJson() => [
         name,
         mass,

@@ -1,4 +1,5 @@
 check if ingredient is used before deleting
 prune unused portions
-share recipe by qr
 detect duplicate recipes/ingredients when sharing
+normalize ingredient 100g
+deprecate ingredients

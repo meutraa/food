@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'data/ingredient.dart';
+import 'graph.dart';
 import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 
@@ -78,81 +77,10 @@ class IngredientItem extends StatelessWidget {
                 width: 128,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: RadarChart(
-                    RadarChartData(
-                      getTitle: (i) {
-                        switch (i) {
-                          case 0:
-                            return 'Fats';
-                          case 1:
-                            return 'Carbs';
-                          case 2:
-                            return 'Protein';
-                          default:
-                            return 'Energy';
-                        }
-                      },
-                      tickCount: 5,
-                      titlePositionPercentageOffset: 0.35,
-                      titleTextStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.75),
-                        fontSize: 10,
-                      ),
-                      ticksTextStyle:
-                          const TextStyle(color: Colors.transparent),
-                      dataSets: [
-                        RadarDataSet(
-                          borderColor: () {
-                            final m = max(
-                              max(
-                                ingredient.carbohydrates,
-                                ingredient.protein,
-                              ),
-                              ingredient.fats,
-                            );
-                            if (m == ingredient.carbohydrates) {
-                              return Colors.pinkAccent;
-                            }
-                            if (m == ingredient.fats) {
-                              return Colors.yellowAccent;
-                            }
-                            if (m == ingredient.protein) {
-                              return Colors.orangeAccent;
-                            }
-                          }(),
-                          borderWidth: 0.5,
-                          entryRadius: 3,
-                          fillColor: Colors.white.withOpacity(0.5),
-                          dataEntries: [
-                            RadarEntry(
-                              value: ingredient.fats / ingredient.mass * 100,
-                            ),
-                            RadarEntry(
-                              value: ingredient.carbohydrates /
-                                  ingredient.mass *
-                                  100,
-                            ),
-                            RadarEntry(
-                              value: ingredient.protein / ingredient.mass * 100,
-                            ),
-                            RadarEntry(
-                              value: ingredient.energy / ingredient.mass * 6,
-                            ),
-                          ],
-                        ),
-                      ],
-                      tickBorderData: BorderSide(
-                        color: Colors.white.withOpacity(0.25),
-                        width: 0.5,
-                      ),
-                      borderData: FlBorderData(show: false),
-                      gridBorderData: BorderSide(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      radarBorderData: const BorderSide(
-                        color: Colors.transparent,
-                      ),
-                    ),
+                  child: ColoredStats(
+                    carbs: ingredient.carbohydrates,
+                    proteins: ingredient.protein,
+                    fats: ingredient.fats,
                   ),
                 ),
               ),

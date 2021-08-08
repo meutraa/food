@@ -5,6 +5,7 @@ import 'data/ingredient.dart';
 import 'modal_confirm.dart';
 import 'neumorphic_text_field.dart';
 import 'objectbox.g.dart';
+import 'style.dart';
 import 'util/validate.dart';
 
 class EditIngredientPage extends StatefulWidget {
@@ -77,9 +78,10 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
   }
 
   Future<void> saveValue() async {
+    final massv = double.tryParse(mass.text) ?? 0;
     final item = Ingredient(
       id: widget.ingredient?.id ?? 0,
-      mass: double.tryParse(mass.text) ?? 0,
+      mass: massv == 0 ? 100 : massv,
       name: name.text,
       energy: double.tryParse(energy.text) ?? 0,
       fats: double.tryParse(fats.text) ?? 0,
@@ -95,68 +97,15 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.lightBlue,
-          elevation: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton.icon(
-                  onPressed: () => showConfirmDialog(
-                    context,
-                    title: 'Discard Changes?',
-                    onConfirmed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.pop(context);
-                    },
-                  ),
-                  icon: const Icon(
-                    Icons.cancel_outlined,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 36,
-                  child: VerticalDivider(
-                    color: Colors.white,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () async {
-                    final valid = _formKey.currentState?.validate();
-                    if (valid ?? false) {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.of(context).pop();
-                      await saveValue();
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.save_outlined,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
         body: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 96, horizontal: 24),
+            padding: const EdgeInsets.only(
+              top: 84,
+              left: 24,
+              right: 24,
+              bottom: 96,
+            ),
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +336,66 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                           suffixText: 'g',
                         ),
                       ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  NeumorphicButton(
+                    onPressed: () => showConfirmDialog(
+                      context,
+                      title: 'Discard Changes?',
+                      onConfirmed: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        Navigator.pop(context);
+                      },
+                    ),
+                    minDistance: -2,
+                    style: textButtonStyle,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  NeumorphicButton(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        Navigator.of(context).pop();
+                        saveValue();
+                      }
+                    },
+                    minDistance: -2,
+                    style: textButtonStyle,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.save_outlined,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

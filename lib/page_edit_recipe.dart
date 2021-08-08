@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -6,6 +7,7 @@ import 'data/recipe.dart';
 import 'modal_confirm.dart';
 import 'neumorphic_text_field.dart';
 import 'objectbox.g.dart';
+import 'style.dart';
 import 'util/validate.dart';
 
 class EditRecipePage extends StatefulWidget {
@@ -92,224 +94,281 @@ class _EditRecipePageState extends State<EditRecipePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.lightBlue,
-          elevation: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton.icon(
-                  onPressed: () => showConfirmDialog(
-                    context,
-                    title: 'Discard Changes?',
-                    onConfirmed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.pop(context);
-                    },
-                  ),
-                  icon: const Icon(
-                    Icons.cancel_outlined,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 36,
-                  child: VerticalDivider(
-                    color: Colors.white,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () async {
-                    final valid = _formKey.currentState?.validate();
-                    if (valid ?? false) {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.of(context).pop();
-                      await saveValue();
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.save_outlined,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
         body: Form(
           key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 96, horizontal: 24),
+          child: Stack(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 17,
-                    child: NeumorphicTextField(
-                      child: TextFormField(
-                        controller: name,
-                        autofocus: widget.recipe == null,
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.sentences,
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Required';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                          hintText: 'Tofu Curry',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 8,
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(start: 16),
-                      child: NeumorphicTextField(
-                        child: TextFormField(
-                          controller: mass,
-                          validator: requiredNumber,
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Per',
-                            hintText: '100',
-                            suffixText: 'g',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Ingredients',
-                style: TextStyle(fontSize: 22),
-              ),
-              const SizedBox(height: 16),
-              Table(
-                columnWidths: const {
-                  0: FlexColumnWidth(8),
-                  1: FlexColumnWidth(5),
-                  2: FlexColumnWidth(3),
-                },
-                children: _portions
-                    .map(
-                      (e) => TableRow(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Autocomplete<Ingredient>(
-                              displayStringForOption: (v) => v.name,
-                              optionsBuilder: (v) {
-                                if (v.text == '') {
-                                  return const Iterable<Ingredient>.empty();
-                                }
-                                final t = v.text.toLowerCase();
-                                return (ingredients ?? [])
-                                    .where(
-                                      (b) => b.name.toLowerCase().contains(t),
-                                    )
-                                    .toList(growable: false);
-                              },
-                              fieldViewBuilder: (context, textEditingController,
-                                      focusNode, onFieldSubmitted) =>
-                                  NeumorphicTextField(
-                                child: TextFormField(
-                                  textInputAction: TextInputAction.next,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Ingredient',
-                                    hintText: 'Lemon',
-                                  ),
-                                  controller: textEditingController
-                                    ..text =
-                                        e.portion.ingredient.target?.name ?? '',
-                                  validator: (val) {
-                                    if (val == null || val.isEmpty) {
-                                      return 'Required';
-                                    }
-                                    return null;
-                                  },
-                                  focusNode: focusNode,
-                                ),
-                              ),
-                              onSelected: (v) {
-                                final idx = _portions.indexOf(e);
-                                e.portion.ingredient.target = v;
-                                _portions[idx] = e;
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(start: 16),
-                            child: NeumorphicTextField(
-                              child: TextFormField(
-                                controller: e.mass,
-                                validator: requiredNumber,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'Mass',
-                                  hintText: '50',
-                                  suffixText: 'g',
-                                ),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () => setState(
-                              () => _portions.remove(e),
-                            ),
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                    .toList(growable: false),
-              ),
-              TextButton.icon(
-                onPressed: () => setState(() {
-                  _portions.add(PortionState(Portion(mass: 0)));
-                }),
-                icon: const Icon(
-                  Icons.add_outlined,
-                  color: Colors.white,
+              ListView(
+                padding: const EdgeInsets.only(
+                  bottom: 96,
+                  top: 84,
+                  left: 24,
+                  right: 24,
                 ),
-                label: const Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 24,
-                    horizontal: 8,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        flex: 17,
+                        child: NeumorphicTextField(
+                          child: TextFormField(
+                            controller: name,
+                            autofocus: widget.recipe == null,
+                            textInputAction: TextInputAction.next,
+                            textCapitalization: TextCapitalization.sentences,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Name',
+                              hintText: 'Tofu Curry',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 8,
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(start: 16),
+                          child: NeumorphicTextField(
+                            child: TextFormField(
+                              controller: mass,
+                              validator: requiredNumber,
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Per',
+                                hintText: '100',
+                                suffixText: 'g',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'Add Ingredient',
-                    style: TextStyle(
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Ingredients',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                  const SizedBox(height: 16),
+                  Table(
+                    columnWidths: const {
+                      0: FlexColumnWidth(8),
+                      1: FlexColumnWidth(5),
+                      2: FlexColumnWidth(3),
+                    },
+                    children: _portions
+                        .map(
+                          (e) => TableRow(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Autocomplete<Ingredient>(
+                                  displayStringForOption: (v) => v.name,
+                                  optionsViewBuilder:
+                                      (context, onSelected, options) => Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: SizedBox(
+                                        width: 300,
+                                        child: ListView.separated(
+                                          padding: const EdgeInsets.all(10),
+                                          shrinkWrap: true,
+                                          separatorBuilder: (context, i) =>
+                                              const SizedBox(height: 8),
+                                          itemCount: options.length,
+                                          itemBuilder: (context, index) {
+                                            final Ingredient option =
+                                                options.elementAt(index);
+                                            return GestureDetector(
+                                              onTap: () => onSelected(option),
+                                              child: Neumorphic(
+                                                style: const NeumorphicStyle(
+                                                  color: Colors.white,
+                                                  depth: 4,
+                                                  shadowLightColor:
+                                                      Colors.white54,
+                                                  shadowDarkColor:
+                                                      Colors.black87,
+                                                ),
+                                                child: ListTile(
+                                                  dense: true,
+                                                  title: Text(
+                                                    option.name,
+                                                    style: const TextStyle(
+                                                      color: Colors.lightBlue,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  optionsBuilder: (v) {
+                                    if (v.text == '') {
+                                      return const Iterable<Ingredient>.empty();
+                                    }
+                                    final t = v.text.toLowerCase();
+                                    return (ingredients ?? [])
+                                        .where(
+                                          (b) =>
+                                              b.name.toLowerCase().contains(t),
+                                        )
+                                        .toList(growable: false);
+                                  },
+                                  fieldViewBuilder: (context,
+                                          textEditingController,
+                                          focusNode,
+                                          onFieldSubmitted) =>
+                                      NeumorphicTextField(
+                                    child: TextFormField(
+                                      textInputAction: TextInputAction.next,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Ingredient',
+                                        hintText: 'Lemon',
+                                      ),
+                                      controller: textEditingController
+                                        ..text =
+                                            e.portion.ingredient.target?.name ??
+                                                '',
+                                      validator: (val) {
+                                        if (val == null || val.isEmpty) {
+                                          return 'Required';
+                                        }
+                                        return null;
+                                      },
+                                      focusNode: focusNode,
+                                    ),
+                                  ),
+                                  onSelected: (v) {
+                                    final idx = _portions.indexOf(e);
+                                    e.portion.ingredient.target = v;
+                                    _portions[idx] = e;
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsetsDirectional.only(start: 16),
+                                child: NeumorphicTextField(
+                                  child: TextFormField(
+                                    controller: e.mass,
+                                    validator: requiredNumber,
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Mass',
+                                      hintText: '50',
+                                      suffixText: 'g',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => setState(
+                                  () => _portions.remove(e),
+                                ),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        .toList(growable: false),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => setState(() {
+                      _portions.add(PortionState(Portion(mass: 0)));
+                    }),
+                    icon: const Icon(
+                      Icons.add_outlined,
                       color: Colors.white,
                     ),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 24,
+                        horizontal: 8,
+                      ),
+                      child: Text(
+                        'Add Ingredient',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      NeumorphicButton(
+                        onPressed: () => showConfirmDialog(
+                          context,
+                          title: 'Discard Changes?',
+                          onConfirmed: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            Navigator.pop(context);
+                          },
+                        ),
+                        minDistance: -2,
+                        style: textButtonStyle,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(
+                              Icons.cancel_outlined,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      NeumorphicButton(
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            Navigator.of(context).pop();
+                            saveValue();
+                          }
+                        },
+                        minDistance: -2,
+                        style: textButtonStyle,
+                        child: Row(
+                          children: const [
+                            Icon(
+                              Icons.save_outlined,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

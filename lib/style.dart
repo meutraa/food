@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 const radioStyle = NeumorphicRadioStyle(
@@ -8,4 +9,18 @@ const radioStyle = NeumorphicRadioStyle(
 const lightBorder = NeumorphicBorder(
   color: Color(0x22ffffff),
   width: 0.5,
+);
+
+const textButtonStyle = NeumorphicStyle(
+  border: lightBorder,
+  depth: 4,
+);
+
+const uiStyle = SystemUiOverlayStyle(
+  systemNavigationBarColor: Colors.transparent,
+  systemNavigationBarContrastEnforced: false,
+  systemNavigationBarIconBrightness: Brightness.light,
+  statusBarIconBrightness: Brightness.light,
+  statusBarBrightness: Brightness.light,
+  statusBarColor: Colors.transparent,
 );
