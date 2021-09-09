@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -46,7 +47,11 @@ class _EditRecipePageState extends State<EditRecipePage> {
     super.initState();
 
     // Load the ingredients from the database
-    ingredients = widget.store.box<Ingredient>().getAll();
+    ingredients = widget.store
+        .box<Ingredient>()
+        .query(Ingredient_.hidden.isNull().or(Ingredient_.hidden.notEquals(1)))
+        .build()
+        .find();
 
     name = TextEditingController(text: widget.recipe?.name);
     mass = TextEditingController(text: widget.recipe?.mass.toInt().toString());
@@ -218,6 +223,18 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                                       color: Colors.lightBlue,
                                                     ),
                                                   ),
+                                                  subtitle:
+                                                      option.description == null
+                                                          ? null
+                                                          : Text(
+                                                              option.description ??
+                                                                  '',
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .lightBlue,
+                                                              ),
+                                                            ),
                                                 ),
                                               ),
                                             );
@@ -231,12 +248,18 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                       return const Iterable<Ingredient>.empty();
                                     }
                                     final t = v.text.toLowerCase();
-                                    return (ingredients ?? [])
-                                        .where(
-                                          (b) =>
-                                              b.name.toLowerCase().contains(t),
-                                        )
-                                        .toList(growable: false);
+                                    (ingredients ?? []).sort(
+                                      (a, b) =>
+                                          StringSimilarity.compareTwoStrings(
+                                                  b.name.toLowerCase(), t)
+                                              .compareTo(
+                                        StringSimilarity.compareTwoStrings(
+                                          a.name.toLowerCase(),
+                                          t,
+                                        ),
+                                      ),
+                                    );
+                                    return ingredients?.take(5) ?? [];
                                   },
                                   fieldViewBuilder: (context,
                                           textEditingController,

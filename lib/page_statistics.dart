@@ -89,6 +89,7 @@ class _StatisticsPageState extends State<StatisticsPage>
       if (p.time!.isAfter(start) && p.time!.isBefore(end)) {
         stats.consumedEnergy += mash.energy;
         stats.consumedCarbs += mash.carbohydrates;
+        stats.consumedSugar += mash.sugar;
         stats.consumedFats += mash.fats;
         stats.consumedProtein += mash.protein;
       }
@@ -543,6 +544,9 @@ class _StatisticsPageState extends State<StatisticsPage>
                         StatItem(
                           value: s.value(d),
                           target: s.target,
+                          mini: s.label == 'Carbohydrates'
+                              ? d.consumedSugar
+                              : null,
                           average: s.average(d),
                           format: s.format,
                           color: s.color,

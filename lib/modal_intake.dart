@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:objectbox/objectbox.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -154,8 +155,22 @@ Future<void> showIntakeDialog(
                               dense: true,
                               title: Text(
                                 option.name,
-                                style: const TextStyle(color: Colors.lightBlue),
+                                style: const TextStyle(
+                                  color: Colors.lightBlue,
+                                  fontSize: 14,
+                                ),
                               ),
+                              subtitle: option.ingredient.target?.description ==
+                                      null
+                                  ? null
+                                  : Text(
+                                      option.ingredient.target?.description ??
+                                          '',
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 10,
+                                      ),
+                                    ),
                             ),
                           ),
                         );
@@ -169,11 +184,18 @@ Future<void> showIntakeDialog(
                   return const Iterable<Portion>.empty();
                 }
                 final t = v.text.toLowerCase();
-                return portions
-                    .where(
-                      (b) => b.name.toLowerCase().contains(t),
-                    )
-                    .toList(growable: false);
+
+                portions.sort(
+                  (a, b) => StringSimilarity.compareTwoStrings(
+                          b.name.toLowerCase(), t)
+                      .compareTo(
+                    StringSimilarity.compareTwoStrings(
+                      a.name.toLowerCase(),
+                      t,
+                    ),
+                  ),
+                );
+                return portions.take(5);
               },
               fieldViewBuilder: (context, textEditingController, focusNode,
                       onFieldSubmitted) =>

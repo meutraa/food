@@ -3,6 +3,7 @@ class Stats {
   double consumedFats = 0;
   double consumedProtein = 0;
   double consumedCarbs = 0;
+  double consumedSugar = 0;
 
   double averageEnergy = 0;
   double averageFats = 0;
