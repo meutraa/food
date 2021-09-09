@@ -39,7 +39,7 @@ class RecipeItem extends StatelessWidget {
               ),
             ),
             Text(
-              '${nf(recipe.mass)} g',
+              '${recipe.mass.toInt()} g',
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.white,
@@ -76,7 +76,7 @@ class RecipeItem extends StatelessWidget {
                                       ? e.ingredient.target?.name
                                       : e.recipe.target?.name) ??
                                   ''),
-                              Text('${nf(e.mass)} g')
+                              Text('${e.mass.toInt()} g')
                             ],
                           ),
                         )
@@ -157,17 +157,21 @@ class RecipeItem extends StatelessWidget {
                       barrierColor: null,
                       builder: (context) => Dialog(
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
                         ),
-                        child: QrImage(
-                          data: data,
-                          eyeStyle: const QrEyeStyle(
-                            eyeShape: QrEyeShape.circle,
-                            color: Colors.white,
-                          ),
-                          dataModuleStyle: const QrDataModuleStyle(
-                            dataModuleShape: QrDataModuleShape.square,
-                            color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: QrImage(
+                            data: data,
+                            errorCorrectionLevel: QrErrorCorrectLevel.M,
+                            eyeStyle: const QrEyeStyle(
+                              eyeShape: QrEyeShape.circle,
+                              color: Colors.white,
+                            ),
+                            dataModuleStyle: const QrDataModuleStyle(
+                              dataModuleShape: QrDataModuleShape.square,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

@@ -9,12 +9,12 @@ import 'graph.dart';
 import 'objectbox.g.dart';
 import 'page_edit_ingredient.dart';
 
-String nf(double? val) => val?.toStringAsFixed(1) ?? '?';
+String nf(num? val) => val?.toStringAsFixed(1) ?? '?';
 
 class IngredientTableMapRow {
   final int index;
   final String name;
-  final double? Function(Ingredient ing) value;
+  final num? Function(Ingredient ing) value;
   final String unit;
 
   const IngredientTableMapRow(this.index, this.name, this.value, this.unit);
@@ -43,29 +43,15 @@ class IngredientItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Text(
-                ingredient.name,
-                maxLines: 2,
-                style: const TextStyle(
-                  fontSize: 18,
-                  overflow: TextOverflow.ellipsis,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ),
-            Text(
-              '${nf(ingredient.mass)} g',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-              ),
-            ),
-          ],
+        title: Text(
+          ingredient.name,
+          maxLines: 2,
+          style: const TextStyle(
+            fontSize: 18,
+            overflow: TextOverflow.ellipsis,
+            color: Colors.white,
+            fontWeight: FontWeight.w300,
+          ),
         ),
         children: [
           Row(
@@ -134,17 +120,21 @@ class IngredientItem extends StatelessWidget {
                     barrierColor: null,
                     builder: (context) => Dialog(
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(24)),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      child: QrImage(
-                        data: jsonEncode(ingredient.toJson()),
-                        eyeStyle: const QrEyeStyle(
-                          eyeShape: QrEyeShape.circle,
-                          color: Colors.white,
-                        ),
-                        dataModuleStyle: const QrDataModuleStyle(
-                          dataModuleShape: QrDataModuleShape.square,
-                          color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: QrImage(
+                          data: jsonEncode(ingredient.toJson()),
+                          errorCorrectionLevel: QrErrorCorrectLevel.M,
+                          eyeStyle: const QrEyeStyle(
+                            eyeShape: QrEyeShape.circle,
+                            color: Colors.white,
+                          ),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleShape: QrDataModuleShape.square,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),

@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
               condition: Portion_.time.notNull(),
               orderField: Portion_.id,
               itemBuilder: (context, e) => PortionItem(
-                key: ValueKey(e.id),
+                key: ValueKey(e),
                 portion: e,
                 store: widget.store,
               ),
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                   ),
               itemBuilder: (context, e) => IngredientItem(
-                key: ValueKey(e.id),
+                key: ValueKey(e),
                 ingredient: e,
                 store: widget.store,
               ),
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
               store: widget.store,
               orderField: Recipe_.id,
               itemBuilder: (context, e) => RecipeItem(
-                key: ValueKey(e.id),
+                key: ValueKey(e),
                 recipe: e,
                 store: widget.store,
               ),

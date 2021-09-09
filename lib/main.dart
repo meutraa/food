@@ -26,31 +26,6 @@ void main() {
         store.box<Ingredient>().putMany(foods);
         Preferences.initialDataVersion.val = 1;
       }
-
-      // Run some migrations
-      if (Preferences.initialDataVersion.val == 1) {
-        debugPrint('migrating initial data to version 2');
-        final foods = store
-            .box<Ingredient>()
-            .query(Ingredient_.description.notNull())
-            .build()
-            .find()
-            .map(
-              (e) => e
-                ..carbohydrates =
-                    e.carbohydrates == -1.0 ? 0.00001 : e.carbohydrates
-                ..fats = e.fats == -1.0 ? 0.00001 : e.fats
-                ..saturated = e.saturated == -1.0 ? 0.00001 : e.saturated
-                ..protein = e.protein == -1.0 ? 0.00001 : e.protein
-                ..salt = e.salt == -1.0 ? 0.00001 : e.salt
-                ..fibre = e.fibre == -1.0 ? 0.00001 : e.fibre
-                ..sugar = e.sugar == -1.0 ? 0.00001 : e.sugar
-                ..energy = e.energy == -1.0 ? 0.00001 : e.energy,
-            )
-            .toList(growable: false);
-        store.box<Ingredient>().putMany(foods, mode: PutMode.update);
-        Preferences.initialDataVersion.val = 2;
-      }
     }()
   ]).then(
     (value) => runApp(

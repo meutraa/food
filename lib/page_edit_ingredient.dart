@@ -27,7 +27,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
 
   late final TextEditingController name;
 
-  late final TextEditingController mass;
   late final TextEditingController energy;
 
   late final TextEditingController fats;
@@ -45,7 +44,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
     super.initState();
     name = TextEditingController(text: widget.ingredient?.name);
 
-    mass = TextEditingController(text: widget.ingredient?.mass.toString());
     energy = TextEditingController(text: widget.ingredient?.energy.toString());
 
     fats = TextEditingController(text: widget.ingredient?.fats.toString());
@@ -65,7 +63,6 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
   @override
   void dispose() {
     name.dispose();
-    mass.dispose();
     energy.dispose();
     fats.dispose();
     saturated.dispose();
@@ -78,10 +75,9 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
   }
 
   Future<void> saveValue() async {
-    final massv = double.tryParse(mass.text) ?? 0;
     final item = Ingredient(
       id: widget.ingredient?.id ?? 0,
-      mass: massv == 0 ? 100 : massv,
+      mass: 100,
       name: name.text,
       energy: double.tryParse(energy.text) ?? 0,
       fats: double.tryParse(fats.text) ?? 0,
@@ -107,50 +103,23 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
               bottom: 96,
             ),
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 20,
-                    child: NeumorphicTextField(
-                      child: TextFormField(
-                        controller: name,
-                        // Autofocus if this is a new item
-                        autofocus: widget.ingredient == null,
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.sentences,
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Required';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                        ),
-                      ),
-                    ),
+              NeumorphicTextField(
+                child: TextFormField(
+                  controller: name,
+                  // Autofocus if this is a new item
+                  autofocus: widget.ingredient == null,
+                  textInputAction: TextInputAction.next,
+                  textCapitalization: TextCapitalization.sentences,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Required';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
                   ),
-                  Flexible(
-                    flex: 9,
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(start: 16),
-                      child: NeumorphicTextField(
-                        child: TextFormField(
-                          controller: mass,
-                          validator: requiredNumber,
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Per',
-                            hintText: '100',
-                            suffixText: 'g',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               const SizedBox(height: 16),
               NeumorphicTextField(

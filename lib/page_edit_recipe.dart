@@ -49,10 +49,10 @@ class _EditRecipePageState extends State<EditRecipePage> {
     ingredients = widget.store.box<Ingredient>().getAll();
 
     name = TextEditingController(text: widget.recipe?.name);
-    mass = TextEditingController(text: widget.recipe?.mass.toString());
+    mass = TextEditingController(text: widget.recipe?.mass.toInt().toString());
 
     _portions.addAll(widget.recipe?.portions.map(
-          (e) => PortionState(e)..mass.text = e.mass.toString(),
+          (e) => PortionState(e)..mass.text = e.mass.toInt().toString(),
         ) ??
         []);
 
@@ -64,6 +64,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
   @override
   void dispose() {
     name.dispose();
+    mass.dispose();
     super.dispose();
   }
 
@@ -80,6 +81,17 @@ class _EditRecipePageState extends State<EditRecipePage> {
     }).toList(growable: false);
 
     widget.store.box<Portion>().putMany(portions);
+
+    if (widget.recipe != null) {
+      final pids = widget.recipe!.portions.map((e) => e.id);
+      final npids = portions.map((e) => e.id);
+      final remove = pids.where((e) => !npids.contains(e));
+
+      widget.recipe!.portions.removeWhere(
+        (i) => remove.contains(i.id),
+      );
+      widget.store.box<Recipe>().put(widget.recipe!);
+    }
 
     final item = Recipe(
       id: widget.recipe?.id ?? 0,

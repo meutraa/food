@@ -54,40 +54,44 @@ class _PortionItemState extends State<PortionItem> {
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        title: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(2),
+            1: FlexColumnWidth(12),
+            2: FlexColumnWidth(2),
+          },
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: [
-            Flexible(
-              child: Row(
-                children: [
-                  Text(
-                    '${intake.mass.toStringAsPrecision(3)} g    ',
+            TableRow(
+              children: [
+                Text(
+                  '${intake.mass.toInt()} g    ',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    intake.name,
+                    maxLines: 2,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 18,
                       color: Colors.white,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
-                  Flexible(
-                    child: Text(
-                      intake.name,
-                      maxLines: 2,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
+                ),
+                Text(
+                  timeAgo(widget.portion.time!),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
                   ),
-                ],
-              ),
-            ),
-            Text(
-              timeAgo(widget.portion.time!),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-              ),
+                ),
+              ],
             ),
           ],
         ),
