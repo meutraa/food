@@ -1,14 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
 import 'graph.dart';
-import 'item_ingredient.dart';
 import 'modal_confirm.dart';
 import 'objectbox.g.dart';
 import 'page_edit_recipe.dart';

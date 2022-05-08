@@ -1,24 +1,19 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:food/graph.dart';
-import 'package:food/stats_painter.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
 import 'data/recipe.dart';
 import 'data/stats.dart';
 import 'date.dart';
+import 'graph.dart';
 import 'item_stat.dart';
 import 'objectbox.g.dart';
 import 'page_preferences.dart';
+import 'stats_painter.dart';
 import 'streamed.dart';
 import 'util/calculations.dart';
 import 'util/preferences.dart';

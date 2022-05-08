@@ -152,12 +152,12 @@ class CurvePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter o) {
-    if (o is CurvePainter) {
-      if (o.fats == fats &&
-          o.maxi == maxi &&
-          o.proteins == proteins &&
-          o.carbs == carbs) {
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    if (oldDelegate is CurvePainter) {
+      if (oldDelegate.fats == fats &&
+          oldDelegate.maxi == maxi &&
+          oldDelegate.proteins == proteins &&
+          oldDelegate.carbs == carbs) {
         return false;
       } else {
         return true;

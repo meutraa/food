@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:objectbox/objectbox.dart';
 import 'package:string_similarity/string_similarity.dart';
 
 import 'data/ingredient.dart';
@@ -23,6 +21,7 @@ const _style = NeumorphicStyle(
 Future<void> showIntakeDialog(
   BuildContext context, {
   required Store store,
+  bool hideIngredient = false,
   Portion? initialPortion,
 }) async {
   final recipes = store.box<Recipe>().getAll().map(
@@ -39,10 +38,10 @@ Future<void> showIntakeDialog(
   final portions = recipes.toList()..addAll(ingredients);
 
   Portion? portion = initialPortion;
-  final _massController = TextEditingController(
+  final massController = TextEditingController(
     text: initialPortion?.mass.toInt().toString(),
   );
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
   return showDialog<void>(
     context: context,
@@ -51,7 +50,7 @@ Future<void> showIntakeDialog(
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Form(
-        key: _formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,7 +62,7 @@ Future<void> showIntakeDialog(
                   child: Neumorphic(
                     style: _style,
                     child: TextFormField(
-                      controller: _massController,
+                      controller: massController,
                       autofocus: true,
                       validator: requiredNumber,
                       textInputAction: TextInputAction.next,
@@ -97,7 +96,7 @@ Future<void> showIntakeDialog(
                     shadowDarkColor: Colors.black87,
                   ),
                   onPressed: () async {
-                    final valid = _formKey.currentState?.validate();
+                    final valid = formKey.currentState?.validate();
                     if (valid == false) {
                       return;
                     }
@@ -107,8 +106,8 @@ Future<void> showIntakeDialog(
 
                     final p = Portion(
                       id: portion?.id ?? 0,
-                      mass: double.tryParse(_massController.text) ?? 0,
-                      time: DateTime.now(),
+                      mass: double.tryParse(massController.text) ?? 0,
+                      time: portion?.time ?? DateTime.now(),
                     );
                     if (portion?.ingredient.hasValue ?? false) {
                       p.ingredient.target = portion!.ingredient.target;
@@ -126,108 +125,110 @@ Future<void> showIntakeDialog(
               ],
             ),
             const SizedBox(height: 24),
-            Autocomplete<Portion>(
-              displayStringForOption: (v) => v.name,
-              optionsViewBuilder: (context, onSelected, options) => Align(
-                alignment: Alignment.topLeft,
-                child: Material(
-                  color: Colors.transparent,
-                  child: SizedBox(
-                    width: 300,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(10),
-                      shrinkWrap: true,
-                      separatorBuilder: (context, i) =>
-                          const SizedBox(height: 8),
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        final Portion option = options.elementAt(index);
-                        return GestureDetector(
-                          onTap: () => onSelected(option),
-                          child: Neumorphic(
-                            style: const NeumorphicStyle(
-                              color: Colors.white,
-                              depth: 4,
-                              shadowLightColor: Colors.white54,
-                              shadowDarkColor: Colors.black87,
-                            ),
-                            child: ListTile(
-                              dense: true,
-                              title: Text(
-                                option.name,
-                                style: const TextStyle(
-                                  color: Colors.lightBlue,
-                                  fontSize: 14,
-                                ),
+            if (!hideIngredient)
+              Autocomplete<Portion>(
+                displayStringForOption: (v) => v.name,
+                optionsViewBuilder: (context, onSelected, options) => Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: SizedBox(
+                      width: 300,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(10),
+                        shrinkWrap: true,
+                        separatorBuilder: (context, i) =>
+                            const SizedBox(height: 8),
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final Portion option = options.elementAt(index);
+                          return GestureDetector(
+                            onTap: () => onSelected(option),
+                            child: Neumorphic(
+                              style: const NeumorphicStyle(
+                                color: Colors.white,
+                                depth: 4,
+                                shadowLightColor: Colors.white54,
+                                shadowDarkColor: Colors.black87,
                               ),
-                              subtitle: option.ingredient.target?.description ==
-                                      null
-                                  ? null
-                                  : Text(
-                                      option.ingredient.target?.description ??
-                                          '',
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 10,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  option.name,
+                                  style: const TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                subtitle: option
+                                            .ingredient.target?.description ==
+                                        null
+                                    ? null
+                                    : Text(
+                                        option.ingredient.target?.description ??
+                                            '',
+                                        style: const TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 10,
+                                        ),
                                       ),
-                                    ),
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              optionsBuilder: (v) {
-                if (v.text == '') {
-                  return const Iterable<Portion>.empty();
-                }
-                final t = v.text.toLowerCase();
+                optionsBuilder: (v) {
+                  if (v.text == '') {
+                    return const Iterable<Portion>.empty();
+                  }
+                  final t = v.text.toLowerCase();
 
-                portions.sort(
-                  (a, b) => StringSimilarity.compareTwoStrings(
-                          b.name.toLowerCase(), t)
-                      .compareTo(
-                    StringSimilarity.compareTwoStrings(
-                      a.name.toLowerCase(),
-                      t,
+                  portions.sort(
+                    (a, b) => StringSimilarity.compareTwoStrings(
+                            b.name.toLowerCase(), t)
+                        .compareTo(
+                      StringSimilarity.compareTwoStrings(
+                        a.name.toLowerCase(),
+                        t,
+                      ),
                     ),
+                  );
+                  return portions.take(5);
+                },
+                fieldViewBuilder: (context, textEditingController, focusNode,
+                        onFieldSubmitted) =>
+                    Neumorphic(
+                  style: _style,
+                  child: TextFormField(
+                    textInputAction: TextInputAction.done,
+                    enableInteractiveSelection: false,
+                    cursorColor: Colors.lightBlue,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Recipe/Ingredient',
+                      hintText: 'Hummous',
+                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      suffixStyle: const TextStyle(color: Colors.lightBlue),
+                      labelStyle: const TextStyle(color: Colors.lightBlue),
+                    ),
+                    controller: textEditingController
+                      ..text = initialPortion?.name ?? '',
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Required';
+                      }
+                      return null;
+                    },
+                    focusNode: focusNode,
                   ),
-                );
-                return portions.take(5);
-              },
-              fieldViewBuilder: (context, textEditingController, focusNode,
-                      onFieldSubmitted) =>
-                  Neumorphic(
-                style: _style,
-                child: TextFormField(
-                  textInputAction: TextInputAction.done,
-                  enableInteractiveSelection: false,
-                  cursorColor: Colors.lightBlue,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Recipe/Ingredient',
-                    hintText: 'Hummous',
-                    hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
-                    suffixStyle: const TextStyle(color: Colors.lightBlue),
-                    labelStyle: const TextStyle(color: Colors.lightBlue),
-                  ),
-                  controller: textEditingController
-                    ..text = initialPortion?.name ?? '',
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Required';
-                    }
-                    return null;
-                  },
-                  focusNode: focusNode,
                 ),
+                onSelected: (v) => portion = v,
               ),
-              onSelected: (v) => portion = v,
-            ),
           ],
         ),
       ),

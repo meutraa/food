@@ -7,24 +7,12 @@ import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
-                .detectDiskReads()
-                .detectDiskWrites()
-                .detectAll() // or .detectAll() for all detectable problems
-                .penaltyLog()
-                .build()
-        )
-        super.onCreate(savedInstanceState)
+        window.setDecorFitsSystemWindows(false)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
+        splashScreen.setOnExitAnimationListener {
+            it.remove()
         }
-//        installSplashScreen()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            splashScreen.setOnExitAnimationListener {
-                it.remove()
-            }
-        }
+
+        super.onCreate(savedInstanceState)
     }
 }
