@@ -17,8 +17,8 @@ class EditRecipePage extends StatefulWidget {
   const EditRecipePage({
     required this.store,
     this.recipe,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _EditRecipePageState createState() => _EditRecipePageState();

@@ -6,8 +6,8 @@ import 'util/preferences.dart';
 
 class PreferencePage extends StatelessWidget {
   const PreferencePage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Scaffold(

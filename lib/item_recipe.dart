@@ -19,9 +19,8 @@ class RecipeItem extends StatelessWidget {
   RecipeItem({
     required this.recipe,
     required this.store,
-    Key? key,
-  })  : mash = recipe.mash(),
-        super(key: key);
+    super.key,
+  }) : mash = recipe.mash();
 
   @override
   Widget build(BuildContext context) => ExpansionTile(

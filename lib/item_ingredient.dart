@@ -37,8 +37,8 @@ class IngredientItem extends StatelessWidget {
   const IngredientItem({
     required this.ingredient,
     required this.store,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => ExpansionTile(

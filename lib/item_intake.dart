@@ -16,8 +16,8 @@ class PortionItem extends StatefulWidget {
   const PortionItem({
     required this.portion,
     required this.store,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _PortionItemState createState() => _PortionItemState();

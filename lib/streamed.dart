@@ -12,12 +12,12 @@ class Streamed<T> extends StatefulWidget {
   final QueryIntegerProperty<T> orderField;
 
   const Streamed({
+    super.key,
     required this.store,
     required this.builder,
     required this.orderField,
     this.condition,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   _StreamedState<T> createState() => _StreamedState<T>();

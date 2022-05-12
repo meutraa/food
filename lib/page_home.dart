@@ -19,8 +19,8 @@ class HomePage extends StatefulWidget {
 
   const HomePage({
     required this.store,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _HomePageState createState() => _HomePageState();

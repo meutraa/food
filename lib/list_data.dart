@@ -21,8 +21,8 @@ class DataList<T> extends StatefulWidget {
     required this.hint,
     required this.orderField,
     this.condition,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _DataListState<T> createState() => _DataListState<T>();

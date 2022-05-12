@@ -19,8 +19,8 @@ class PreferenceItem<T> extends StatefulWidget {
     required this.format,
     required this.min,
     required this.max,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PreferenceItem<T>> createState() => _PreferenceItemState<T>();

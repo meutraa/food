@@ -13,9 +13,9 @@ class EditIngredientPage extends StatefulWidget {
 
   const EditIngredientPage({
     required this.store,
-    Key? key,
+    super.key,
     this.ingredient,
-  }) : super(key: key);
+  });
 
   @override
   _EditIngredientPageState createState() => _EditIngredientPageState();

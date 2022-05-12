@@ -2,9 +2,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'util/preferences.dart';
 
 class SexButton extends StatefulWidget {
-  const SexButton({
-    Key? key,
-  }) : super(key: key);
+  const SexButton({super.key});
 
   @override
   State<SexButton> createState() => _SexButtonState();

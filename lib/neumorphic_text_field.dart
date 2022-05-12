@@ -5,8 +5,8 @@ class NeumorphicTextField extends StatelessWidget {
 
   const NeumorphicTextField({
     required this.child,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Neumorphic(

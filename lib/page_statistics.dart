@@ -25,8 +25,8 @@ class StatisticsPage extends StatefulWidget {
 
   const StatisticsPage({
     required this.store,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _StatisticsPageState createState() => _StatisticsPageState();

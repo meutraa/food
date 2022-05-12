@@ -15,8 +15,8 @@ class ColoredStats extends StatelessWidget {
     required this.carbs,
     required this.proteins,
     this.maxi,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => ShaderMask(
