@@ -1,4 +1,4 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:string_similarity/string_similarity.dart';
 
 import 'data/ingredient.dart';
@@ -21,7 +21,7 @@ class EditRecipePage extends StatefulWidget {
   });
 
   @override
-  _EditRecipePageState createState() => _EditRecipePageState();
+  EditRecipePageState createState() => EditRecipePageState();
 }
 
 class PortionState {
@@ -31,7 +31,7 @@ class PortionState {
   PortionState(this.portion);
 }
 
-class _EditRecipePageState extends State<EditRecipePage> {
+class EditRecipePageState extends State<EditRecipePage> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController name;
@@ -357,9 +357,9 @@ class _EditRecipePageState extends State<EditRecipePage> {
                         ),
                         minDistance: -2,
                         style: textButtonStyle,
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Icon(
                               Icons.cancel_outlined,
                               color: Colors.white,
@@ -384,8 +384,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
                         },
                         minDistance: -2,
                         style: textButtonStyle,
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Icon(
                               Icons.save_outlined,
                               color: Colors.white,

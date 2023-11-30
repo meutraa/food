@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:objectbox/internal.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 import 'neumorphic_text_field.dart';
 import 'objectbox.g.dart';
@@ -25,10 +24,10 @@ class DataList<T> extends StatefulWidget {
   });
 
   @override
-  _DataListState<T> createState() => _DataListState<T>();
+  DataListState<T> createState() => DataListState<T>();
 }
 
-class _DataListState<T> extends State<DataList<T>>
+class DataListState<T> extends State<DataList<T>>
     with AutomaticKeepAliveClientMixin {
   var _filter = '';
   final _filterController = TextEditingController();

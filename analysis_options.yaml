@@ -3,9 +3,6 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   language:
     strict-raw-types: true
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
   exclude:
     - lib/gen/*.gen.dart
     - lib/gen/**/*.dart

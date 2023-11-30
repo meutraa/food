@@ -1,4 +1,5 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'package:food/util/backup.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -23,16 +24,17 @@ class HomePage extends StatefulWidget {
   });
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   late PageController _pageController;
   int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
+    BackupManager().backupDatabaseIfNeeded();
     _pageController = PageController(initialPage: _currentPage);
   }
 

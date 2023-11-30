@@ -3,13 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class IntPreference extends BasePreference<int> {
   IntPreference(
-    SharedPreferences _prefs, {
-    required String key,
-    required int defaultValue,
+    super._prefs, {
+    required super.key,
+    required super.defaultValue,
   }) : super(
-          _prefs,
-          key: key,
-          defaultValue: defaultValue,
           set: (prefs, key, value) => prefs.setInt(key, value ?? defaultValue),
           get: (prefs, key) => prefs.getInt(key),
         );

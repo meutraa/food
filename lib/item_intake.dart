@@ -20,10 +20,10 @@ class PortionItem extends StatefulWidget {
   });
 
   @override
-  _PortionItemState createState() => _PortionItemState();
+  PortionItemState createState() => PortionItemState();
 }
 
-class _PortionItemState extends State<PortionItem> {
+class PortionItemState extends State<PortionItem> {
   // This ingredient is an ingredient, or a mashed together recipe
   late Ingredient intake;
 
@@ -62,6 +62,8 @@ class _PortionItemState extends State<PortionItem> {
             ..ingredient.target = widget.portion.ingredient.target,
         ),
         child: ExpansionTile(
+          iconColor: Colors.white,
+          collapsedIconColor: Colors.white,
           title: Table(
             columnWidths: const {
               0: FlexColumnWidth(2),

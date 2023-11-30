@@ -42,6 +42,8 @@ class IngredientItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
+        iconColor: Colors.white,
+        collapsedIconColor: Colors.white,
         title: Text(
           ingredient.name,
           maxLines: 2,
@@ -123,7 +125,7 @@ class IngredientItem extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8),
-                        child: QrImage(
+                        child: QrImageView(
                           data: jsonEncode(ingredient.toJson()),
                           errorCorrectionLevel: QrErrorCorrectLevel.M,
                           eyeStyle: const QrEyeStyle(

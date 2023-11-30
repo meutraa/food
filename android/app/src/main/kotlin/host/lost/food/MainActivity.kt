@@ -9,10 +9,6 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         window.setDecorFitsSystemWindows(false)
 
-        splashScreen.setOnExitAnimationListener {
-            it.remove()
-        }
-
         super.onCreate(savedInstanceState)
     }
 }

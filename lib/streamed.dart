@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:objectbox/internal.dart';
 
 import 'objectbox.g.dart';
 
@@ -20,10 +19,10 @@ class Streamed<T> extends StatefulWidget {
   });
 
   @override
-  _StreamedState<T> createState() => _StreamedState<T>();
+  StreamedState<T> createState() => StreamedState<T>();
 }
 
-class _StreamedState<T> extends State<Streamed<T>> {
+class StreamedState<T> extends State<Streamed<T>> {
   final _controller = StreamController<List<T>>();
 
   @override

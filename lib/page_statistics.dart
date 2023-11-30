@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 import 'data/ingredient.dart';
 import 'data/portion.dart';
@@ -29,7 +29,7 @@ class StatisticsPage extends StatefulWidget {
   });
 
   @override
-  _StatisticsPageState createState() => _StatisticsPageState();
+  StatisticsPageState createState() => StatisticsPageState();
 }
 
 class StatData {
@@ -52,7 +52,7 @@ class StatData {
 
 const mul = 1.3;
 
-class _StatisticsPageState extends State<StatisticsPage>
+class StatisticsPageState extends State<StatisticsPage>
     with AutomaticKeepAliveClientMixin {
   late DateTime startTime;
   late DateTime delay;
@@ -200,7 +200,10 @@ class _StatisticsPageState extends State<StatisticsPage>
     return Streamed<Portion>(
       store: widget.store,
       orderField: Portion_.time,
-      condition: Portion_.time.notNull(),
+      condition: Portion_.time.notNull().and(
+            Portion_.time
+                .greaterThan(DateTime(2022, 09).millisecondsSinceEpoch),
+          ),
       builder: (context, items) => FutureBuilder<Stats>(
         future: updateData(items, startTime, endTime),
         builder: (context, snapshot) {
@@ -549,7 +552,6 @@ class _StatisticsPageState extends State<StatisticsPage>
                       ],
                     )
                     .expand((e) => e)
-                    .toList(growable: false)
               ],
             ),
           );

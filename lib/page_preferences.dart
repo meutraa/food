@@ -1,4 +1,5 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'package:food/util/backup.dart';
 import 'button_sex.dart';
 import 'item_preference.dart';
 import 'util/calculations.dart';
@@ -17,15 +18,22 @@ class PreferencePage extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     'Preferences',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w200,
                     ),
                   ),
-                  SexButton(),
+                  NeumorphicButton(
+                    onPressed: () {
+                      BackupManager().backupDatabase(true);
+                    },
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(Icons.backup_outlined),
+                  ),
+                  const SexButton(),
                 ],
               ),
               const SizedBox(height: 24),

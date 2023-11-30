@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'style.dart';
 
 class StatItem extends StatelessWidget {
@@ -18,8 +18,8 @@ class StatItem extends StatelessWidget {
     required this.average,
     required this.color,
     this.mini,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Padding(

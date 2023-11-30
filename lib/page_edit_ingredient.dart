@@ -1,5 +1,10 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'data/ingredient.dart';
 import 'modal_confirm.dart';
 import 'neumorphic_text_field.dart';
@@ -18,10 +23,10 @@ class EditIngredientPage extends StatefulWidget {
   });
 
   @override
-  _EditIngredientPageState createState() => _EditIngredientPageState();
+  EditIngredientPageState createState() => EditIngredientPageState();
 }
 
-class _EditIngredientPageState extends State<EditIngredientPage> {
+class EditIngredientPageState extends State<EditIngredientPage> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController name;
@@ -88,6 +93,113 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
       salt: double.tryParse(salt.text) ?? 0,
     );
     await widget.store.box<Ingredient>().putAsync(item);
+  }
+
+  Future<void> scanData() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera,
+      maxHeight: 1920,
+      maxWidth: 1920,
+      imageQuality: 88,
+    );
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+
+      List<int> imageBytes = await imageFile.readAsBytes();
+
+      // Convert to Base64
+      String base64Image = base64Encode(imageBytes);
+
+      String body = jsonEncode({
+        'model': 'gpt-4-vision-preview',
+        'messages': [
+          {
+            'role': 'user',
+            'content': [
+              {
+                'type': 'text',
+                'text': 'Analyze the nutritional information on this label and output it in the format:\n'
+                    'Energy|Total Fats|Saturated Fats|Total Carbohydrates|Sugar|Fibre|Protein|Salt|Message\n'
+                    'Under no circumstances should the output differ from that format.'
+                    'Where everything is measured in grams (or kCal for Energy) and the values are for per 100g, not per serving.\n'
+                    'If for any field you are unable to accurately determine a value, either make a best guess, or if you really are not sure, use a value of 0.\n'
+                    'Do not output the unit, for example, write 36.6 and not 36.6g. Write 110, not 110kCal.'
+                    'For the fields from Energy to Salt, under no circumstances should you use anything but a numerical value.'
+                    'It is not that important to fill in saturated fats, sugar, fibre, and salt, if you are unsure just put 0 and don\'t consider it a big issue.'
+                    'Message is optional. If you had trouble fufilling the requirements of the task, this is the place to put your comment.'
+              },
+              {
+                'type': 'image_url',
+                'image_url': {
+                  "url": "data:image/jpeg;base64,$base64Image",
+                }
+              }
+            ]
+          }
+        ],
+        'max_tokens': 300,
+      });
+
+      // Step 2: Make the API Request
+      var response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer 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',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        var decodedResponse = jsonDecode(response.body);
+
+        // Extract the message content of the first choice
+        String messageContent =
+            decodedResponse['choices'][0]['message']['content'];
+
+        final parts = messageContent.split("|");
+        energy.text = parts[0];
+        fats.text = parts[1];
+        saturated.text = parts[2];
+        carbohydrates.text = parts[3];
+        sugar.text = parts[4];
+        fibre.text = parts[5];
+        protein.text = parts[6];
+        salt.text = parts[7];
+        final message = parts[8];
+        if (message.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(days: 1),
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              response.body,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -313,6 +425,27 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   NeumorphicButton(
+                    onPressed: scanData,
+                    minDistance: -2,
+                    style: textButtonStyle,
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.camera_alt_outlined,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Scan',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  NeumorphicButton(
                     onPressed: () => showConfirmDialog(
                       context,
                       title: 'Discard Changes?',
@@ -323,9 +456,9 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                     ),
                     minDistance: -2,
                     style: textButtonStyle,
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Icon(
                           Icons.cancel_outlined,
                           color: Colors.white,
@@ -350,8 +483,8 @@ class _EditIngredientPageState extends State<EditIngredientPage> {
                     },
                     minDistance: -2,
                     style: textButtonStyle,
-                    child: Row(
-                      children: const [
+                    child: const Row(
+                      children: [
                         Icon(
                           Icons.save_outlined,
                           color: Colors.white,

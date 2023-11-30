@@ -24,6 +24,8 @@ class RecipeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ExpansionTile(
+        iconColor: Colors.white,
+        collapsedIconColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -158,7 +160,7 @@ class RecipeItem extends StatelessWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: QrImage(
+                          child: QrImageView(
                             data: data,
                             errorCorrectionLevel: QrErrorCorrectLevel.M,
                             eyeStyle: const QrEyeStyle(

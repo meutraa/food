@@ -4,7 +4,8 @@
 // With a Dart package, run `dart run build_runner build`.
 // See also https://docs.objectbox.io/getting-started#generate-objectbox-code
 
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, depend_on_referenced_packages
+// coverage:ignore-file
 
 import 'dart:typed_data';
 
@@ -163,7 +164,13 @@ final _entities = <ModelEntity>[
       backlinks: <ModelBacklink>[])
 ];
 
-/// Open an ObjectBox store with the model declared in this file.
+/// Shortcut for [Store.new] that passes [getObjectBoxModel] and for Flutter
+/// apps by default a [directory] using `defaultStoreDirectory()` from the
+/// ObjectBox Flutter library.
+///
+/// Note: for desktop apps it is recommended to specify a unique [directory].
+///
+/// See [Store.new] for an explanation of all parameters.
 Future<Store> openStore(
         {String? directory,
         int? maxDBSizeInKB,
@@ -179,7 +186,8 @@ Future<Store> openStore(
         queriesCaseSensitiveDefault: queriesCaseSensitiveDefault,
         macosApplicationGroup: macosApplicationGroup);
 
-/// ObjectBox model definition, pass it to [Store] - Store(getObjectBoxModel())
+/// Returns the ObjectBox model definition for this project for use with
+/// [Store.new].
 ModelDefinition getObjectBoxModel() {
   final model = ModelInfo(
       entities: _entities,
@@ -280,33 +288,47 @@ ModelDefinition getObjectBoxModel() {
         objectFromFB: (Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
-
+          final massParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0);
+          final nameParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 6, '');
+          final energyParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 10, 0);
+          final fatsParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 12, 0);
+          final saturatedParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 14, 0);
+          final carbohydratesParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 22, 0);
+          final sugarParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 24, 0);
+          final fibreParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 26, 0);
+          final proteinParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 28, 0);
+          final saltParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 30, 0);
+          final hiddenParam =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 34);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final descriptionParam =
+              const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 32);
           final object = Ingredient(
-              mass:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0),
-              name: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 6, ''),
-              energy:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 10, 0),
-              fats:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 12, 0),
-              saturated:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 14, 0),
-              carbohydrates:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 22, 0),
-              sugar:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 24, 0),
-              fibre:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 26, 0),
-              protein:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 28, 0),
-              salt:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 30, 0),
-              hidden: const fb.Int64Reader()
-                  .vTableGetNullable(buffer, rootOffset, 34),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
-              description: const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 32));
+              mass: massParam,
+              name: nameParam,
+              energy: energyParam,
+              fats: fatsParam,
+              saturated: saturatedParam,
+              carbohydrates: carbohydratesParam,
+              sugar: sugarParam,
+              fibre: fibreParam,
+              protein: proteinParam,
+              salt: saltParam,
+              hidden: hiddenParam,
+              id: idParam,
+              description: descriptionParam);
 
           return object;
         }),
@@ -333,13 +355,14 @@ ModelDefinition getObjectBoxModel() {
           final rootOffset = buffer.derefObject(0);
           final timeValue =
               const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 14);
-          final object = Portion(
-              mass:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 6, 0),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
-              time: timeValue == null
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(timeValue));
+          final massParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 6, 0);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final timeParam = timeValue == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(timeValue);
+          final object = Portion(mass: massParam, id: idParam, time: timeParam);
           object.ingredient.targetId =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
           object.ingredient.attach(store);
@@ -369,15 +392,15 @@ ModelDefinition getObjectBoxModel() {
         objectFromFB: (Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
-
-          final object = Recipe(
-              mass:
-                  const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0),
-              name: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 6, ''),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0));
-          InternalToManyAccess.setRelInfo(object.portions, store,
-              RelInfo<Recipe>.toMany(3, object.id), store.box<Recipe>());
+          final massParam =
+              const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0);
+          final nameParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 6, '');
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final object = Recipe(mass: massParam, name: nameParam, id: idParam);
+          InternalToManyAccess.setRelInfo<Recipe>(
+              object.portions, store, RelInfo<Recipe>.toMany(3, object.id));
           return object;
         })
   };
