@@ -141,24 +141,19 @@ class EditIngredientPageState extends State<EditIngredientPage> {
         'max_tokens': 300,
       });
 
-      // Step 2: Make the API Request
       var response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization':
-              'Bearer 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',
+          'Authorization': 'Bearer ',
         },
         body: body,
       );
 
       if (response.statusCode == 200) {
-        // Parse the JSON response
         var decodedResponse = jsonDecode(response.body);
 
-        // Extract the message content of the first choice
-        String messageContent =
-            decodedResponse['choices'][0]['message']['content'];
+        String messageContent = decodedResponse['choices'][0]['message']['content'];
 
         final parts = messageContent.split("|");
         energy.text = parts[0];

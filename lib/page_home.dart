@@ -34,7 +34,9 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    BackupManager().backupDatabaseIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      BackupManager().backupDatabaseIfNeeded();
+    });
     _pageController = PageController(initialPage: _currentPage);
   }
 

@@ -84,8 +84,8 @@ class DataListState<T> extends State<DataList<T>>
                 stops: [
                   0.0,
                   0.1,
-                  0.85,
-                  0.91,
+                  0.87,
+                  0.95,
                   1.0,
                 ],
               ).createShader(bounds),
